@@ -1,0 +1,1790 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "OpenAPI definition",
+    "version" : "v0"
+  },
+  "servers" : [ {
+    "url" : "https://rest.uniprot.org/",
+    "description" : "UniProt REST API Server"
+  } ],
+  "tags" : [ {
+    "name" : "GeneCentric",
+    "description" : "GeneCentric services of a proteome, where the set of genes and their products are grouped under a single canonical gene identifier"
+  }, {
+    "name" : "Proteomes",
+    "description" : "The proteomes service offers access to UniProtKB proteomes, allowing users to search for proteomes (including reference or redundant proteomes) using UniProt proteome identifiers, species names, or taxonomy identifiers"
+  } ],
+  "paths" : {
+    "/proteomes/{upid}" : {
+      "get" : {
+        "tags" : [ "Proteomes" ],
+        "summary" : "Get proteome entry by a single upid.",
+        "description" : "Search Proteome entry by Proteome ID(upid) to return all data associated with that entry. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "getByUpId",
+        "parameters" : [ {
+          "name" : "upid",
+          "in" : "path",
+          "description" : "Unique identifier for the proteome entry",
+          "required" : true,
+          "schema" : {
+            "pattern" : "UP[0-9]{9}",
+            "type" : "string"
+          },
+          "example" : "UP000005640"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/proteomes/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "upid,organism,organism_id"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProteomeEntry"
+                }
+              },
+              "application/xml" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Proteome"
+                }
+              },
+              "text/plain;format=tsv" : { },
+              "text/plain;format=list" : { },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { },
+              "application/rdf+xml" : { }
+            }
+          }
+        }
+      }
+    },
+    "/proteomes/stream" : {
+      "get" : {
+        "tags" : [ "Proteomes" ],
+        "summary" : "Download proteome entries retrieved by a search query.",
+        "description" : "The stream endpoint uses a request query to return all entries associated with the search term in a single download. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "stream",
+        "parameters" : [ {
+          "name" : "query",
+          "in" : "query",
+          "description" : "Criteria to search proteomes. Advanced queries can be built with parentheses and conditionals such as AND, OR and NOT. <a href='https://rest.uniprot.org/configure/proteomes/search-fields' target='_blank' rel='noopener noreferrer'>List of valid search fields</a>",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "eukaryota"
+        }, {
+          "name" : "sort",
+          "in" : "query",
+          "description" : "Specify field by which to sort results. <a href='https://rest.uniprot.org/configure/proteomes/result-fields' target='_blank' rel='noopener noreferrer'>List of valid sort fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "organism_name asc"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/proteomes/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "upid,organism,organism_id"
+        }, {
+          "name" : "download",
+          "in" : "query",
+          "description" : "Specify <tt>true</tt> to download as file, default is <tt>false</tt>.",
+          "required" : false,
+          "schema" : {
+            "pattern" : "^true$|^false$",
+            "type" : "boolean"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/StreamResult"
+                }
+              },
+              "application/xml" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/Proteome"
+                  }
+                }
+              },
+              "text/plain;format=tsv" : { },
+              "text/plain;format=list" : { },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { },
+              "application/rdf+xml" : { }
+            }
+          }
+        }
+      }
+    },
+    "/proteomes/search" : {
+      "get" : {
+        "tags" : [ "Proteomes" ],
+        "summary" : "Retrieve proteome entries by a search query.",
+        "description" : "The search endpoint uses a request query to return all entries associated with the search term in a paginated list of entries. Use ‘size’ to specify the number of entries per page of results. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "search",
+        "parameters" : [ {
+          "name" : "query",
+          "in" : "query",
+          "description" : "Criteria to search proteomes. Advanced queries can be built with parentheses and conditionals such as AND, OR and NOT. <a href='https://rest.uniprot.org/configure/proteomes/search-fields' target='_blank' rel='noopener noreferrer'>List of valid search fields</a>",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "eukaryota"
+        }, {
+          "name" : "sort",
+          "in" : "query",
+          "description" : "Specify field by which to sort results. <a href='https://rest.uniprot.org/configure/proteomes/result-fields' target='_blank' rel='noopener noreferrer'>List of valid sort fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "organism_name asc"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/proteomes/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "upid,organism,organism_id"
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "Specify the number of entries per page of results (Pagination size). Default is 25, max is 500",
+          "required" : false,
+          "schema" : {
+            "maximum" : 500,
+            "minimum" : 0,
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "example" : 50
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "ProteomeEntry",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SearchResult"
+                }
+              },
+              "application/xml" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/Proteome"
+                  }
+                }
+              },
+              "text/plain;format=tsv" : { },
+              "text/plain;format=list" : { },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { }
+            }
+          }
+        }
+      }
+    },
+    "/genecentric/{accession}" : {
+      "get" : {
+        "tags" : [ "GeneCentric" ],
+        "summary" : "Retrieve a GeneCentric entry by a single UniProtKB accession.",
+        "description" : "Search GeneCentric entry by protein accession to return all data associated with that entry. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "getByAccession",
+        "parameters" : [ {
+          "name" : "accession",
+          "in" : "path",
+          "description" : "Unique and stable identifier for each UniProtKB entry",
+          "required" : true,
+          "schema" : {
+            "pattern" : "([OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z]([0-9][A-Z][A-Z0-9]{2}){1,2}[0-9])(-[0-9]+)?",
+            "type" : "string"
+          },
+          "example" : "P05067"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/genecentric/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "accession,gene_name,proteome_id"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/GeneCentricEntry"
+                }
+              },
+              "application/xml" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/GeneCentricEntry"
+                }
+              },
+              "text/plain;format=fasta" : { },
+              "text/plain;format=list" : { }
+            }
+          }
+        }
+      }
+    },
+    "/genecentric/upid/{upid}" : {
+      "get" : {
+        "tags" : [ "GeneCentric" ],
+        "summary" : "Retrieve GeneCentric entries of a single Proteome ID.",
+        "description" : "Search GeneCentric entry by Proteome ID to return all data associated with that entry. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "getByUpId_1",
+        "parameters" : [ {
+          "name" : "upid",
+          "in" : "query",
+          "description" : "Unique identifier for the proteome entry",
+          "required" : true,
+          "schema" : {
+            "pattern" : "UP[0-9]{9}",
+            "type" : "string"
+          },
+          "example" : "UP000005640"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/genecentric/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "accession,gene_name,proteome_id"
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "Specify the number of entries per page of results (Pagination size). Default is 25, max is 500",
+          "required" : false,
+          "schema" : {
+            "maximum" : 500,
+            "minimum" : 0,
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "example" : 50
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/GeneCentricEntry"
+                  }
+                }
+              },
+              "application/xml" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/GeneCentricEntry"
+                  }
+                }
+              },
+              "text/plain;format=fasta" : { },
+              "text/plain;format=list" : { }
+            }
+          }
+        }
+      }
+    },
+    "/genecentric/stream" : {
+      "get" : {
+        "tags" : [ "GeneCentric" ],
+        "summary" : "Download GeneCentric entries retrieved by a search query.",
+        "description" : "The stream endpoint uses a request query to return all entries associated with the search term in a single download. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "stream_1",
+        "parameters" : [ {
+          "name" : "query",
+          "in" : "query",
+          "description" : "Criteria to search GeneCentric. Advanced queries can be built with parentheses and conditionals such as AND, OR and NOT. <a href='https://rest.uniprot.org/configure/genecentric/search-fields' target='_blank' rel='noopener noreferrer'>List of valid search fields</a>",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "gene:APP"
+        }, {
+          "name" : "sort",
+          "in" : "query",
+          "description" : "Specify field by which to sort results. <a href='https://rest.uniprot.org/configure/genecentric/result-fields' target='_blank' rel='noopener noreferrer'>List of valid sort fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "organism_name asc"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/genecentric/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "accession,gene_name,proteome_id"
+        }, {
+          "name" : "download",
+          "in" : "query",
+          "description" : "Specify <tt>true</tt> to download as file, default is <tt>false</tt>.",
+          "required" : false,
+          "schema" : {
+            "pattern" : "^true$|^false$",
+            "type" : "boolean"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/StreamResult"
+                }
+              },
+              "application/xml" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/GeneCentricEntry"
+                  }
+                }
+              },
+              "text/plain;format=fasta" : { },
+              "text/plain;format=list" : { }
+            }
+          }
+        }
+      }
+    },
+    "/genecentric/search" : {
+      "get" : {
+        "tags" : [ "GeneCentric" ],
+        "summary" : "Retrieve GeneCentric entries by a search query.",
+        "description" : "The search endpoint uses a request query to return all entries associated with the search term in a paginated list of entries. Use ‘size’ to specify the number of entries per page of results. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "searchCursor",
+        "parameters" : [ {
+          "name" : "query",
+          "in" : "query",
+          "description" : "Criteria to search GeneCentric. Advanced queries can be built with parentheses and conditionals such as AND, OR and NOT. <a href='https://rest.uniprot.org/configure/genecentric/search-fields' target='_blank' rel='noopener noreferrer'>List of valid search fields</a>",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "gene:APP"
+        }, {
+          "name" : "sort",
+          "in" : "query",
+          "description" : "Specify field by which to sort results. <a href='https://rest.uniprot.org/configure/genecentric/result-fields' target='_blank' rel='noopener noreferrer'>List of valid sort fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "organism_name asc"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/genecentric/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "accession,gene_name,proteome_id"
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "Specify the number of entries per page of results (Pagination size). Default is 25, max is 500",
+          "required" : false,
+          "schema" : {
+            "maximum" : 500,
+            "minimum" : 0,
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "example" : 50
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "GeneCentricEntry",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SearchResult"
+                }
+              },
+              "application/xml" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/GeneCentricEntry"
+                  }
+                }
+              },
+              "text/plain;format=fasta" : { },
+              "text/plain;format=list" : { }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "BuscoReport" : {
+        "type" : "object",
+        "properties" : {
+          "score" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "completeDuplicated" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "completeSingle" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "total" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "complete" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "fragmented" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "missing" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "lineageDb" : {
+            "type" : "string"
+          }
+        }
+      },
+      "CPDReport" : {
+        "type" : "object",
+        "properties" : {
+          "status" : {
+            "type" : "string",
+            "enum" : [ "Standard", "Close to standard (high value)", "Close to standard (low value)", "Outlier (high value)", "Outlier (low value)", "Unknown" ]
+          },
+          "proteomeCount" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "stdCdss" : {
+            "type" : "number",
+            "format" : "double"
+          },
+          "averageCdss" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "confidence" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }
+      },
+      "Citation" : {
+        "type" : "object",
+        "properties" : {
+          "authoringGroups" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "authors" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "citationType" : {
+            "type" : "string",
+            "enum" : [ "journal article", "book", "online journal article", "patent", "submission", "thesis", "UniProt indexed literatures", "unpublished observations" ]
+          },
+          "publicationDate" : {
+            "type" : "string"
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "citationCrossReferences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CrossReferenceCitationDatabase"
+            }
+          }
+        },
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/Book"
+        }, {
+          "$ref" : "#/components/schemas/ElectronicArticle"
+        }, {
+          "$ref" : "#/components/schemas/JournalArticle"
+        }, {
+          "$ref" : "#/components/schemas/Literature"
+        }, {
+          "$ref" : "#/components/schemas/Patent"
+        }, {
+          "$ref" : "#/components/schemas/Submission"
+        }, {
+          "$ref" : "#/components/schemas/Thesis"
+        } ]
+      },
+      "Component" : {
+        "type" : "object",
+        "properties" : {
+          "proteinCount" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "genomeAnnotation" : {
+            "$ref" : "#/components/schemas/GenomeAnnotation"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "proteomeCrossReferences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CrossReferenceProteomeDatabase"
+            }
+          },
+          "description" : {
+            "type" : "string"
+          }
+        }
+      },
+      "CrossReferenceCitationDatabase" : {
+        "type" : "object",
+        "properties" : {
+          "database" : {
+            "type" : "string",
+            "enum" : [ "PubMed", "DOI", "AGRICOLA" ]
+          },
+          "properties" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Property"
+            }
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "CrossReferenceProteomeDatabase" : {
+        "type" : "object",
+        "properties" : {
+          "database" : {
+            "type" : "string",
+            "enum" : [ "GenomeAssembly", "GenomeAnnotation", "GenomeAccession", "AssemblyId", "Biosample" ]
+          },
+          "properties" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Property"
+            }
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "GenomeAnnotation" : {
+        "type" : "object",
+        "properties" : {
+          "url" : {
+            "type" : "string"
+          },
+          "source" : {
+            "type" : "string"
+          }
+        }
+      },
+      "GenomeAssembly" : {
+        "type" : "object",
+        "properties" : {
+          "level" : {
+            "type" : "string",
+            "enum" : [ "full", "partial" ]
+          },
+          "source" : {
+            "type" : "string",
+            "enum" : [ "ENA/EMBL", "EnsemblFungi", "EnsemblPlants", "EnsemblBacteria", "EnsemblProtists", "EnsemblMetazoa", "Ensembl", "RefSeq", "WormBase" ]
+          },
+          "assemblyId" : {
+            "type" : "string"
+          },
+          "genomeAssemblyUrl" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Property" : {
+        "type" : "object",
+        "properties" : {
+          "key" : {
+            "type" : "string"
+          },
+          "value" : {
+            "type" : "string"
+          }
+        }
+      },
+      "ProteomeCompletenessReport" : {
+        "type" : "object",
+        "properties" : {
+          "buscoReport" : {
+            "$ref" : "#/components/schemas/BuscoReport"
+          },
+          "cpdreport" : {
+            "$ref" : "#/components/schemas/CPDReport"
+          }
+        }
+      },
+      "ProteomeEntry" : {
+        "type" : "object",
+        "properties" : {
+          "taxonomy" : {
+            "$ref" : "#/components/schemas/Taxonomy"
+          },
+          "modified" : {
+            "type" : "string",
+            "format" : "date"
+          },
+          "proteomeType" : {
+            "type" : "string",
+            "enum" : [ "Other proteome", "Reference proteome", "Representative proteome", "Reference and representative proteome", "Redundant proteome", "Excluded" ]
+          },
+          "redundantTo" : {
+            "type" : "string"
+          },
+          "strain" : {
+            "type" : "string"
+          },
+          "isolate" : {
+            "type" : "string"
+          },
+          "citations" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Citation"
+            }
+          },
+          "panproteome" : {
+            "type" : "string"
+          },
+          "annotationScore" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "superkingdom" : {
+            "type" : "string",
+            "enum" : [ "archaea", "viruses", "bacteria", "eukaryota" ]
+          },
+          "proteinCount" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "geneCount" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "taxonLineages" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TaxonomyLineage"
+            }
+          },
+          "genomeAssembly" : {
+            "$ref" : "#/components/schemas/GenomeAssembly"
+          },
+          "components" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Component"
+            }
+          },
+          "proteomeCompletenessReport" : {
+            "$ref" : "#/components/schemas/ProteomeCompletenessReport"
+          },
+          "genomeAnnotation" : {
+            "$ref" : "#/components/schemas/GenomeAnnotation"
+          },
+          "exclusionReasons" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string",
+              "enum" : [ "genome length too large", "partial", "missing tRNA genes", "untrustworthy as type", "many frameshifted proteins", "missing rRNA genes", "genome length too small", "low gene count", "unverified source organism", "derived from environmental source", "low contig N50", "low quality sequence", "high contig L50", "contaminated", "mixed culture", "misassembled", "derived from metagenome", "derived from single cell", "missing ribosomal protein genes", "validation errors", "abnormal gene to sequence ratio", "metagenome", "hybrid", "chimeric", "derived from surveillance project", "fragmented assembly", "RefSeq annotation failed", "derived from large-scale project", "from large multi-isolate project", "genus undefined", "missing strain identifier", "not used as type", "unverified host organism", "superseded by newer assembly for species", "incomplete metagenome", "incomplete metagenome-assembled genome", "low quality proteome", "proteome in uniparc", "over-represented proteome", "sequence duplications", "delayed for further analysis" ]
+            }
+          },
+          "proteomeStatistics" : {
+            "$ref" : "#/components/schemas/ProteomeStatistics"
+          },
+          "redudantProteomes" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/RedundantProteome"
+            }
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          }
+        }
+      },
+      "ProteomeStatistics" : {
+        "type" : "object",
+        "properties" : {
+          "isoformProteinCount" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "reviewedProteinCount" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "unreviewedProteinCount" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "RedundantProteome" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "similarity" : {
+            "type" : "number",
+            "format" : "float"
+          }
+        }
+      },
+      "Taxonomy" : {
+        "type" : "object",
+        "properties" : {
+          "taxonId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "mnemonic" : {
+            "type" : "string"
+          },
+          "scientificName" : {
+            "type" : "string"
+          },
+          "synonyms" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "commonName" : {
+            "type" : "string"
+          }
+        }
+      },
+      "TaxonomyLineage" : {
+        "type" : "object",
+        "properties" : {
+          "taxonId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "hidden" : {
+            "type" : "boolean"
+          },
+          "rank" : {
+            "type" : "string",
+            "enum" : [ "strain", "serotype", "series", "morph", "biotype", "clade", "genotype", "isolate", "forma specialis", "pathogroup", "serogroup", "section", "subsection", "forma", "varietas", "subspecies", "species", "species subgroup", "species group", "subgenus", "genus", "subtribe", "tribe", "subfamily", "family", "superfamily", "parvorder", "infraorder", "suborder", "order", "superorder", "subcohort", "cohort", "infraclass", "subclass", "class", "superclass", "subphylum", "phylum", "superphylum", "subkingdom", "kingdom", "superkingdom", "realm", "domain", "subvariety", "acellular root", "cellular root", "no rank" ]
+          },
+          "scientificName" : {
+            "type" : "string"
+          },
+          "synonyms" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "commonName" : {
+            "type" : "string"
+          }
+        }
+      },
+      "AnnotationScoreType" : {
+        "type" : "object",
+        "properties" : {
+          "normalizedAnnotationScore" : {
+            "type" : "integer",
+            "format" : "int32",
+            "xml" : {
+              "attribute" : true
+            }
+          }
+        }
+      },
+      "CitationType" : {
+        "type" : "object",
+        "properties" : {
+          "title" : {
+            "type" : "string"
+          },
+          "authorList" : {
+            "$ref" : "#/components/schemas/NameListType"
+          },
+          "dbReference" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/DbReferenceType"
+            }
+          },
+          "type" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "date" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "name" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "volume" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "first" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "last" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "db" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          }
+        }
+      },
+      "ComponentType" : {
+        "type" : "object",
+        "properties" : {
+          "description" : {
+            "type" : "string"
+          },
+          "biosampleId" : {
+            "type" : "string"
+          },
+          "genomeAccession" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "genomeAnnotation" : {
+            "$ref" : "#/components/schemas/GenomeAnnotationType"
+          },
+          "name" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "proteinCount" : {
+            "type" : "integer",
+            "format" : "int32",
+            "xml" : {
+              "attribute" : true
+            }
+          }
+        }
+      },
+      "DbReferenceType" : {
+        "type" : "object",
+        "properties" : {
+          "type" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "id" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          }
+        }
+      },
+      "ExclusionType" : {
+        "required" : [ "exclusionReason" ],
+        "type" : "object",
+        "properties" : {
+          "exclusionReason" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      },
+      "GenomeAnnotationType" : {
+        "required" : [ "genomeAnnotationSource" ],
+        "type" : "object",
+        "properties" : {
+          "genomeAnnotationSource" : {
+            "type" : "string"
+          },
+          "genomeAnnotationUrl" : {
+            "type" : "string"
+          }
+        }
+      },
+      "GenomeAssemblyType" : {
+        "required" : [ "genomeAssemblySource" ],
+        "type" : "object",
+        "properties" : {
+          "genomeAssemblySource" : {
+            "type" : "string"
+          },
+          "genomeAssembly" : {
+            "type" : "string"
+          },
+          "genomeAssemblyUrl" : {
+            "type" : "string"
+          },
+          "genomeRepresentation" : {
+            "type" : "string"
+          }
+        }
+      },
+      "NameListType" : {
+        "type" : "object",
+        "properties" : {
+          "consortiumOrPerson" : {
+            "type" : "array",
+            "items" : {
+              "type" : "object"
+            }
+          }
+        }
+      },
+      "Proteome" : {
+        "required" : [ "component", "modified", "upid" ],
+        "type" : "object",
+        "properties" : {
+          "upid" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "taxonomy" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "modified" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "isReferenceProteome" : {
+            "type" : "boolean"
+          },
+          "isRepresentativeProteome" : {
+            "type" : "boolean"
+          },
+          "redundantTo" : {
+            "type" : "string"
+          },
+          "strain" : {
+            "type" : "string"
+          },
+          "isolate" : {
+            "type" : "string"
+          },
+          "genomeAssembly" : {
+            "$ref" : "#/components/schemas/GenomeAssemblyType"
+          },
+          "genomeAnnotation" : {
+            "$ref" : "#/components/schemas/GenomeAnnotationType"
+          },
+          "component" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ComponentType"
+            }
+          },
+          "reference" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ReferenceType"
+            }
+          },
+          "redundantProteome" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/RedundantProteomeType"
+            }
+          },
+          "annotationScore" : {
+            "$ref" : "#/components/schemas/AnnotationScoreType"
+          },
+          "panproteome" : {
+            "type" : "string"
+          },
+          "excluded" : {
+            "$ref" : "#/components/schemas/ExclusionType"
+          },
+          "scores" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ScoreType"
+            }
+          },
+          "proteinCount" : {
+            "type" : "integer",
+            "format" : "int32",
+            "xml" : {
+              "attribute" : true
+            }
+          }
+        },
+        "xml" : {
+          "name" : "proteome",
+          "namespace" : "http://uniprot.org/proteome"
+        }
+      },
+      "RedundantProteomeType" : {
+        "type" : "object",
+        "properties" : {
+          "upid" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "similarity" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          }
+        }
+      },
+      "ReferenceType" : {
+        "required" : [ "citation" ],
+        "type" : "object",
+        "properties" : {
+          "citation" : {
+            "$ref" : "#/components/schemas/CitationType"
+          }
+        }
+      },
+      "ScorePropertyType" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "value" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          }
+        }
+      },
+      "ScoreType" : {
+        "type" : "object",
+        "properties" : {
+          "property" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ScorePropertyType"
+            }
+          },
+          "name" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          }
+        }
+      },
+      "StreamResult" : {
+        "type" : "object",
+        "properties" : {
+          "results" : {
+            "type" : "array",
+            "items" : {
+              "type" : "object",
+              "anyOf" : [ {
+                "$ref" : "#/components/schemas/GeneCentricEntry"
+              }, {
+                "$ref" : "#/components/schemas/ProteomeEntry"
+              } ]
+            }
+          },
+          "error" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Facet" : {
+        "type" : "object",
+        "properties" : {
+          "label" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "allowMultipleSelection" : {
+            "type" : "boolean"
+          },
+          "values" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/FacetItem"
+            }
+          }
+        }
+      },
+      "FacetItem" : {
+        "type" : "object",
+        "properties" : {
+          "label" : {
+            "type" : "string"
+          },
+          "value" : {
+            "type" : "string"
+          },
+          "count" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "ProblemPair" : {
+        "type" : "object",
+        "properties" : {
+          "code" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "message" : {
+            "type" : "string"
+          }
+        }
+      },
+      "SearchResult" : {
+        "type" : "object",
+        "properties" : {
+          "results" : {
+            "type" : "array",
+            "items" : {
+              "type" : "object",
+              "anyOf" : [ {
+                "$ref" : "#/components/schemas/GeneCentricEntry"
+              }, {
+                "$ref" : "#/components/schemas/ProteomeEntry"
+              } ]
+            }
+          },
+          "facets" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Facet"
+            }
+          },
+          "matchedFields" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TermInfo"
+            }
+          },
+          "suggestions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Suggestion"
+            }
+          },
+          "warnings" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ProblemPair"
+            }
+          }
+        }
+      },
+      "Suggestion" : {
+        "type" : "object",
+        "properties" : {
+          "query" : {
+            "type" : "string"
+          },
+          "hits" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "TermInfo" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "hits" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "CrossReferenceEvidenceDatabase" : {
+        "type" : "object",
+        "properties" : {
+          "database" : {
+            "$ref" : "#/components/schemas/EvidenceDatabase"
+          },
+          "properties" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Property"
+            }
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Evidence" : {
+        "type" : "object",
+        "properties" : {
+          "evidenceCode" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "source" : {
+            "type" : "string"
+          }
+        }
+      },
+      "EvidenceDatabase" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "reference" : {
+            "type" : "boolean"
+          },
+          "evidenceDatabaseDetail" : {
+            "$ref" : "#/components/schemas/EvidenceDatabaseDetail"
+          }
+        }
+      },
+      "EvidenceDatabaseDetail" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "displayName" : {
+            "type" : "string"
+          },
+          "category" : {
+            "type" : "string",
+            "enum" : [ "I", "C", "A" ]
+          },
+          "uriLink" : {
+            "type" : "string"
+          }
+        }
+      },
+      "GeneCentricEntry" : {
+        "type" : "object",
+        "properties" : {
+          "canonicalProtein" : {
+            "$ref" : "#/components/schemas/Protein"
+          },
+          "proteomeId" : {
+            "type" : "string"
+          },
+          "relatedProteins" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Protein"
+            }
+          }
+        }
+      },
+      "Organism" : {
+        "type" : "object",
+        "properties" : {
+          "taxonId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "lineages" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "scientificName" : {
+            "type" : "string"
+          },
+          "synonyms" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "commonName" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "Protein" : {
+        "type" : "object",
+        "properties" : {
+          "entryType" : {
+            "type" : "string",
+            "enum" : [ "UniProtKB reviewed (Swiss-Prot)", "UniProtKB unreviewed (TrEMBL)", "Inactive", "UNKNOWN" ]
+          },
+          "uniProtkbId" : {
+            "type" : "string"
+          },
+          "proteinName" : {
+            "type" : "string"
+          },
+          "organism" : {
+            "$ref" : "#/components/schemas/Organism"
+          },
+          "geneName" : {
+            "type" : "string"
+          },
+          "flagType" : {
+            "type" : "string",
+            "enum" : [ "Precursor", "Fragment", "Fragments", "Fragment,Precursor", "Fragments,Precursor" ]
+          },
+          "sequenceVersion" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "proteinExistence" : {
+            "type" : "string",
+            "enum" : [ "1: Evidence at protein level", "2: Evidence at transcript level", "3: Inferred from homology", "4: Predicted", "5: Uncertain", "UNKNOWN" ]
+          },
+          "sequenceRange" : {
+            "type" : "string"
+          },
+          "sequence" : {
+            "$ref" : "#/components/schemas/Sequence"
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Sequence" : {
+        "type" : "object",
+        "properties" : {
+          "molWeight" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "crc64" : {
+            "type" : "string"
+          },
+          "md5" : {
+            "type" : "string"
+          },
+          "length" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "value" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Literature" : {
+        "type" : "object",
+        "properties" : {
+          "pubmedId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "doiId" : {
+            "type" : "string"
+          },
+          "literatureAbstract" : {
+            "type" : "string"
+          },
+          "completeAuthorList" : {
+            "type" : "boolean"
+          },
+          "firstPage" : {
+            "type" : "string"
+          },
+          "lastPage" : {
+            "type" : "string"
+          },
+          "volume" : {
+            "type" : "string"
+          },
+          "journal" : {
+            "type" : "string"
+          },
+          "authoringGroups" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "authors" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "publicationDate" : {
+            "type" : "string"
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "citationCrossReferences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CrossReferenceCitationDatabase"
+            }
+          }
+        }
+      },
+      "Submission" : {
+        "type" : "object",
+        "properties" : {
+          "submissionDatabase" : {
+            "type" : "string",
+            "enum" : [ "PDB data bank", "PIR data bank", "Swiss-Prot", "UniProtKB", "EMBL/GenBank/DDBJ databases" ]
+          },
+          "authoringGroups" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "authors" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "publicationDate" : {
+            "type" : "string"
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "citationCrossReferences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CrossReferenceCitationDatabase"
+            }
+          }
+        }
+      },
+      "ElectronicArticle" : {
+        "type" : "object",
+        "properties" : {
+          "locator" : {
+            "type" : "string"
+          },
+          "journal" : {
+            "type" : "string"
+          },
+          "authoringGroups" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "authors" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "publicationDate" : {
+            "type" : "string"
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "citationCrossReferences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CrossReferenceCitationDatabase"
+            }
+          }
+        }
+      },
+      "Thesis" : {
+        "type" : "object",
+        "properties" : {
+          "institute" : {
+            "type" : "string"
+          },
+          "address" : {
+            "type" : "string"
+          },
+          "authoringGroups" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "authors" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "publicationDate" : {
+            "type" : "string"
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "citationCrossReferences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CrossReferenceCitationDatabase"
+            }
+          }
+        }
+      },
+      "Book" : {
+        "type" : "object",
+        "properties" : {
+          "bookName" : {
+            "type" : "string"
+          },
+          "editors" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "firstPage" : {
+            "type" : "string"
+          },
+          "lastPage" : {
+            "type" : "string"
+          },
+          "volume" : {
+            "type" : "string"
+          },
+          "publisher" : {
+            "type" : "string"
+          },
+          "address" : {
+            "type" : "string"
+          },
+          "authoringGroups" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "authors" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "publicationDate" : {
+            "type" : "string"
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "citationCrossReferences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CrossReferenceCitationDatabase"
+            }
+          }
+        }
+      },
+      "Patent" : {
+        "type" : "object",
+        "properties" : {
+          "patentNumber" : {
+            "type" : "string"
+          },
+          "authoringGroups" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "authors" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "publicationDate" : {
+            "type" : "string"
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "citationCrossReferences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CrossReferenceCitationDatabase"
+            }
+          }
+        }
+      },
+      "JournalArticle" : {
+        "type" : "object",
+        "properties" : {
+          "firstPage" : {
+            "type" : "string"
+          },
+          "lastPage" : {
+            "type" : "string"
+          },
+          "volume" : {
+            "type" : "string"
+          },
+          "journal" : {
+            "type" : "string"
+          },
+          "authoringGroups" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "authors" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "publicationDate" : {
+            "type" : "string"
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "citationCrossReferences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CrossReferenceCitationDatabase"
+            }
+          }
+        }
+      }
+    }
+  }
+}

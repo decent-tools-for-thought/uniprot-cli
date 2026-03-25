@@ -1,0 +1,3682 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "OpenAPI definition",
+    "version" : "v0"
+  },
+  "servers" : [ {
+    "url" : "https://rest.uniprot.org/",
+    "description" : "UniProt REST API Server"
+  } ],
+  "tags" : [ {
+    "name" : "ID Mapping results",
+    "description" : "API calls to retrieve the results of a submitted ID Mapping job."
+  }, {
+    "name" : "ID Mapping job",
+    "description" : "The ID Mapping service can map between the identifiers used in one database, to the identifiers of another, e.g., from UniProt to Ensembl, or to PomBase, etc. If you map to UniProtKB, UniParc or UniRef data, the full entries will be returned to you for convenience."
+  } ],
+  "paths" : {
+    "/idmapping/run" : {
+      "post" : {
+        "tags" : [ "ID Mapping job" ],
+        "summary" : "Submit ID Mapping job.",
+        "operationId" : "submitJob",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/IdMappingJobRequest"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/JobSubmitResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/idmapping/uniref/results/{jobId}" : {
+      "get" : {
+        "tags" : [ "ID Mapping results" ],
+        "summary" : "Search result of UniRef cluster (or clusters) by a submitted job id.",
+        "description" : "The search endpoint uses a request query to return all entries associated with the search term in a paginated list of entries. Use ‘size’ to specify the number of entries per page of results. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "getMappedEntries",
+        "parameters" : [ {
+          "name" : "jobId",
+          "in" : "path",
+          "description" : "Unique identifier for ID Mapping job",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "query",
+          "in" : "query",
+          "description" : "Criteria to search UniRef. Advanced queries can be built with parentheses and conditionals such as AND, OR and NOT. <a href='https://rest.uniprot.org/configure/uniref/search-fields' target='_blank' rel='noopener noreferrer'>List of valid search fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "Transcription factors"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/uniref/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "id,name,types,organism,identity"
+        }, {
+          "name" : "sort",
+          "in" : "query",
+          "description" : "Specify field by which to sort results. <a href='https://rest.uniprot.org/configure/uniref/result-fields' target='_blank' rel='noopener noreferrer'>List of valid sort fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "id asc"
+        }, {
+          "name" : "complete",
+          "in" : "query",
+          "description" : "Flag to include all member ids and organisms, or not. By default, it returns a maximum of 10 member ids and organisms",
+          "required" : false,
+          "schema" : {
+            "pattern" : "^(?:true|false)$",
+            "type" : "boolean"
+          }
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "Specify the number of entries per page of results (Pagination size). Default is 25, max is 500",
+          "required" : false,
+          "schema" : {
+            "maximum" : 500,
+            "minimum" : 0,
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "example" : 50
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "UniRefEntryPair",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UniRefIdMappingSearchResult"
+                }
+              },
+              "text/plain;format=tsv" : { },
+              "text/plain;format=list" : { },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { },
+              "text/plain;format=fasta" : { }
+            }
+          }
+        }
+      }
+    },
+    "/idmapping/uniref/results/stream/{jobId}" : {
+      "get" : {
+        "tags" : [ "ID Mapping results" ],
+        "summary" : "Stream an UniRef cluster (or clusters) retrieved by a submitted job id.",
+        "description" : "The stream endpoint uses a request query to return all entries associated with the search term in a single download. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "streamMappedEntries",
+        "parameters" : [ {
+          "name" : "jobId",
+          "in" : "path",
+          "description" : "Unique identifier for ID Mapping job",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "query",
+          "in" : "query",
+          "description" : "Criteria to search UniRef. Advanced queries can be built with parentheses and conditionals such as AND, OR and NOT. <a href='https://rest.uniprot.org/configure/uniref/search-fields' target='_blank' rel='noopener noreferrer'>List of valid search fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "Transcription factors"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/uniref/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "id,name,types,organism,identity"
+        }, {
+          "name" : "sort",
+          "in" : "query",
+          "description" : "Specify field by which to sort results. <a href='https://rest.uniprot.org/configure/uniref/result-fields' target='_blank' rel='noopener noreferrer'>List of valid sort fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "id asc"
+        }, {
+          "name" : "complete",
+          "in" : "query",
+          "description" : "Flag to include all member ids and organisms, or not. By default, it returns a maximum of 10 member ids and organisms",
+          "required" : false,
+          "schema" : {
+            "pattern" : "^(?:true|false)$",
+            "type" : "boolean"
+          }
+        }, {
+          "name" : "download",
+          "in" : "query",
+          "description" : "Specify <tt>true</tt> to download as file, default is <tt>false</tt>.",
+          "required" : false,
+          "schema" : {
+            "pattern" : "^(?:true|false)$",
+            "type" : "boolean"
+          }
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "Specify the number of entries per page of results (Pagination size). Default is 25, max is 500",
+          "required" : false,
+          "schema" : {
+            "maximum" : 500,
+            "minimum" : 0,
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "example" : 50
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UniRefStreamResult"
+                }
+              },
+              "text/plain;format=tsv" : { },
+              "text/plain;format=list" : { },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { },
+              "text/plain;format=fasta" : { },
+              "application/rdf+xml" : { }
+            }
+          }
+        }
+      }
+    },
+    "/idmapping/uniprotkb/results/{jobId}" : {
+      "get" : {
+        "tags" : [ "ID Mapping results" ],
+        "summary" : "Search result for a UniProtKB protein entry (or entries) mapped by a submitted job id.",
+        "description" : "The search endpoint uses a request query to return all entries associated with the search term in a paginated list of entries. Use ‘size’ to specify the number of entries per page of results. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "getMappedEntries_1",
+        "parameters" : [ {
+          "name" : "jobId",
+          "in" : "path",
+          "description" : "Unique identifier for ID Mapping job",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "query",
+          "in" : "query",
+          "description" : "Criteria to search UniProtKB. Advanced queries can be built with parentheses and conditionals such as AND, OR and NOT. <a href='https://rest.uniprot.org/configure/uniprotkb/search-fields' target='_blank' rel='noopener noreferrer'>List of valid search fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "insulin AND reviewed:true"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/uniprotkb/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "accession,protein_name,cc_function,ft_binding"
+        }, {
+          "name" : "sort",
+          "in" : "query",
+          "description" : "Specify field by which to sort results. <a href='https://rest.uniprot.org/configure/uniprotkb/result-fields' target='_blank' rel='noopener noreferrer'>List of valid sort fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "accession desc"
+        }, {
+          "name" : "includeIsoform",
+          "in" : "query",
+          "description" : "Specify <tt>true</tt> to include isoforms, default is <tt>false</tt>.",
+          "required" : false,
+          "schema" : {
+            "pattern" : "true|false",
+            "type" : "boolean"
+          }
+        }, {
+          "name" : "subsequence",
+          "in" : "query",
+          "description" : "Flag to write subsequences. Only accepted in fasta format",
+          "required" : false,
+          "schema" : {
+            "pattern" : "true|false",
+            "type" : "string"
+          }
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "Specify the number of entries per page of results (Pagination size). Default is 25, max is 500",
+          "required" : false,
+          "schema" : {
+            "maximum" : 500,
+            "minimum" : 0,
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "example" : 50
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "UniProtKBEntryPair",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UniProtKBIdMappingSearchResult"
+                }
+              },
+              "application/xml" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/Entry"
+                  }
+                }
+              },
+              "text/plain;format=tsv" : { },
+              "text/plain;format=flatfile" : { },
+              "text/plain;format=list" : { },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { },
+              "text/plain;format=fasta" : { },
+              "text/plain;format=gff" : { }
+            }
+          }
+        }
+      }
+    },
+    "/idmapping/uniprotkb/results/stream/{jobId}" : {
+      "get" : {
+        "tags" : [ "ID Mapping results" ],
+        "summary" : "Download UniProtKB protein entry (or entries) mapped by a submitted job id.",
+        "description" : "The stream endpoint uses a request query to return all entries associated with the search term in a single download. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "streamMappedEntries_1",
+        "parameters" : [ {
+          "name" : "jobId",
+          "in" : "path",
+          "description" : "Unique identifier for ID Mapping job",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "query",
+          "in" : "query",
+          "description" : "Criteria to search UniProtKB. Advanced queries can be built with parentheses and conditionals such as AND, OR and NOT. <a href='https://rest.uniprot.org/configure/uniprotkb/search-fields' target='_blank' rel='noopener noreferrer'>List of valid search fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "insulin AND reviewed:true"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/uniprotkb/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "accession,protein_name,cc_function,ft_binding"
+        }, {
+          "name" : "sort",
+          "in" : "query",
+          "description" : "Specify field by which to sort results. <a href='https://rest.uniprot.org/configure/uniprotkb/result-fields' target='_blank' rel='noopener noreferrer'>List of valid sort fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "accession desc"
+        }, {
+          "name" : "includeIsoform",
+          "in" : "query",
+          "description" : "Specify <tt>true</tt> to include isoforms, default is <tt>false</tt>.",
+          "required" : false,
+          "schema" : {
+            "pattern" : "true|false",
+            "type" : "boolean"
+          }
+        }, {
+          "name" : "subsequence",
+          "in" : "query",
+          "description" : "Flag to write subsequences. Only accepted in fasta format",
+          "required" : false,
+          "schema" : {
+            "pattern" : "true|false",
+            "type" : "string"
+          }
+        }, {
+          "name" : "download",
+          "in" : "query",
+          "description" : "Specify <tt>true</tt> to download as file, default is <tt>false</tt>.",
+          "required" : false,
+          "schema" : {
+            "pattern" : "^(?:true|false)$",
+            "type" : "boolean"
+          }
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "Specify the number of entries per page of results (Pagination size). Default is 25, max is 500",
+          "required" : false,
+          "schema" : {
+            "maximum" : 500,
+            "minimum" : 0,
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "example" : 50
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UniProtKBStreamResult"
+                }
+              },
+              "application/xml" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/Entry"
+                  }
+                }
+              },
+              "text/plain;format=tsv" : { },
+              "text/plain;format=flatfile" : { },
+              "text/plain;format=list" : { },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { },
+              "text/plain;format=fasta" : { },
+              "text/plain;format=gff" : { },
+              "application/rdf+xml" : { }
+            }
+          }
+        }
+      }
+    },
+    "/idmapping/uniparc/results/{jobId}" : {
+      "get" : {
+        "tags" : [ "ID Mapping results" ],
+        "summary" : "Search result of UniParc sequence entry (or entries) by a submitted job id.",
+        "description" : "The search endpoint uses a request query to return all entries associated with the search term in a paginated list of entries. Use ‘size’ to specify the number of entries per page of results. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "getMappedEntries_2",
+        "parameters" : [ {
+          "name" : "jobId",
+          "in" : "path",
+          "description" : "Unique identifier for ID Mapping job",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "query",
+          "in" : "query",
+          "description" : "Criteria to search UniParc. Advanced queries can be built with parentheses and conditionals such as AND, OR and NOT. <a href='https://rest.uniprot.org/configure/uniparc/search-fields' target='_blank' rel='noopener noreferrer'>List of valid search fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "Homo Sapiens"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/uniparc/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "upi,organism,length"
+        }, {
+          "name" : "sort",
+          "in" : "query",
+          "description" : "Specify field by which to sort results. <a href='https://rest.uniprot.org/configure/uniparc/result-fields' target='_blank' rel='noopener noreferrer'>List of valid sort fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "upi asc"
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "Specify the number of entries per page of results (Pagination size). Default is 25, max is 500",
+          "required" : false,
+          "schema" : {
+            "maximum" : 500,
+            "minimum" : 0,
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "example" : 50
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "UniParcEntryPair",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UniParcIdMappingSearchResult"
+                }
+              },
+              "application/xml" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/Entry"
+                  }
+                }
+              },
+              "text/plain;format=tsv" : { },
+              "text/plain;format=list" : { },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { },
+              "text/plain;format=fasta" : { }
+            }
+          }
+        }
+      }
+    },
+    "/idmapping/uniparc/results/stream/{jobId}" : {
+      "get" : {
+        "tags" : [ "ID Mapping results" ],
+        "summary" : "Stream a UniParc sequence entry (or entries) by a submitted job id.",
+        "description" : "The stream endpoint uses a request query to return all entries associated with the search term in a single download. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "streamMappedEntries_2",
+        "parameters" : [ {
+          "name" : "jobId",
+          "in" : "path",
+          "description" : "Unique identifier for ID Mapping job",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "query",
+          "in" : "query",
+          "description" : "Criteria to search UniParc. Advanced queries can be built with parentheses and conditionals such as AND, OR and NOT. <a href='https://rest.uniprot.org/configure/uniparc/search-fields' target='_blank' rel='noopener noreferrer'>List of valid search fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "Homo Sapiens"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/uniparc/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "upi,organism,length"
+        }, {
+          "name" : "sort",
+          "in" : "query",
+          "description" : "Specify field by which to sort results. <a href='https://rest.uniprot.org/configure/uniparc/result-fields' target='_blank' rel='noopener noreferrer'>List of valid sort fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "upi asc"
+        }, {
+          "name" : "download",
+          "in" : "query",
+          "description" : "Specify <tt>true</tt> to download as file, default is <tt>false</tt>.",
+          "required" : false,
+          "schema" : {
+            "pattern" : "^(?:true|false)$",
+            "type" : "boolean"
+          }
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "Specify the number of entries per page of results (Pagination size). Default is 25, max is 500",
+          "required" : false,
+          "schema" : {
+            "maximum" : 500,
+            "minimum" : 0,
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "example" : 50
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UniParcStreamResult"
+                }
+              },
+              "application/xml" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/Entry"
+                  }
+                }
+              },
+              "text/plain;format=tsv" : { },
+              "text/plain;format=list" : { },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { },
+              "text/plain;format=fasta" : { },
+              "application/rdf+xml" : { }
+            }
+          }
+        }
+      }
+    },
+    "/idmapping/stream/{jobId}" : {
+      "get" : {
+        "tags" : [ "ID Mapping results" ],
+        "summary" : "Stream result by a submitted job id.",
+        "description" : "The stream endpoint uses a request query to return all entries associated with the search term in a single download. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "streamResults",
+        "parameters" : [ {
+          "name" : "jobId",
+          "in" : "path",
+          "description" : "Unique identifier for ID Mapping job",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "download",
+          "in" : "query",
+          "description" : "Specify <tt>true</tt> to download as file, default is <tt>false</tt>.",
+          "required" : false,
+          "schema" : {
+            "pattern" : "^(?:true|false)$",
+            "type" : "boolean"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SimpleStreamResult"
+                }
+              },
+              "text/plain;format=tsv" : { },
+              "text/plain;format=list" : { },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { }
+            }
+          }
+        }
+      }
+    },
+    "/idmapping/status/{jobId}" : {
+      "get" : {
+        "tags" : [ "ID Mapping job" ],
+        "summary" : "Get status of ID Mapping job.",
+        "operationId" : "getStatus",
+        "parameters" : [ {
+          "name" : "jobId",
+          "in" : "path",
+          "description" : "Unique identifier for ID Mapping job",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/JobStatusResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/idmapping/results/{jobId}" : {
+      "get" : {
+        "tags" : [ "ID Mapping results" ],
+        "summary" : "Search result by a submitted job id.",
+        "description" : "The search endpoint uses a request query to return all entries associated with the search term in a paginated list of entries. Use ‘size’ to specify the number of entries per page of results. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "results",
+        "parameters" : [ {
+          "name" : "jobId",
+          "in" : "path",
+          "description" : "Unique identifier for ID Mapping job",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "pageRequest",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/IdMappingPageRequest"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "IdMappingStringPair",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SimpleIdMappingSearchResult"
+                }
+              },
+              "text/plain;format=tsv" : { },
+              "text/plain;format=list" : { },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { }
+            }
+          }
+        }
+      }
+    },
+    "/idmapping/details/{jobId}" : {
+      "get" : {
+        "tags" : [ "ID Mapping job" ],
+        "summary" : "Get details of ID Mapping job.",
+        "operationId" : "getDetails",
+        "parameters" : [ {
+          "name" : "jobId",
+          "in" : "path",
+          "description" : "Unique identifier for ID Mapping job",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/JobDetailResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "JobSubmitResponse" : {
+        "type" : "object",
+        "properties" : {
+          "jobId" : {
+            "type" : "string"
+          },
+          "message" : {
+            "type" : "string"
+          }
+        }
+      },
+      "IdMappingJobRequest" : {
+        "required" : [ "from", "ids", "to" ],
+        "type" : "object",
+        "properties" : {
+          "from" : {
+            "type" : "string"
+          },
+          "to" : {
+            "type" : "string"
+          },
+          "ids" : {
+            "type" : "string"
+          },
+          "taxId" : {
+            "type" : "string"
+          }
+        }
+      },
+      "CrossReferenceEvidenceDatabase" : {
+        "type" : "object",
+        "properties" : {
+          "database" : {
+            "$ref" : "#/components/schemas/EvidenceDatabase"
+          },
+          "properties" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Property"
+            }
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Evidence" : {
+        "type" : "object",
+        "properties" : {
+          "evidenceCode" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "source" : {
+            "type" : "string"
+          }
+        }
+      },
+      "EvidenceDatabase" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "evidenceDatabaseDetail" : {
+            "$ref" : "#/components/schemas/EvidenceDatabaseDetail"
+          },
+          "reference" : {
+            "type" : "boolean"
+          }
+        }
+      },
+      "EvidenceDatabaseDetail" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "displayName" : {
+            "type" : "string"
+          },
+          "category" : {
+            "type" : "string",
+            "enum" : [ "I", "C", "A" ]
+          },
+          "uriLink" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Facet" : {
+        "type" : "object",
+        "properties" : {
+          "label" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "allowMultipleSelection" : {
+            "type" : "boolean"
+          },
+          "values" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/FacetItem"
+            }
+          }
+        }
+      },
+      "FacetItem" : {
+        "type" : "object",
+        "properties" : {
+          "label" : {
+            "type" : "string"
+          },
+          "value" : {
+            "type" : "string"
+          },
+          "count" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "GeneOntologyEntry" : {
+        "type" : "object",
+        "properties" : {
+          "ancestors" : {
+            "uniqueItems" : true,
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/GeneOntologyEntry"
+            }
+          },
+          "aspect" : {
+            "type" : "string",
+            "enum" : [ "GO Molecular Function", "GO Biological Process", "GO Cellular Component" ]
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Organism" : {
+        "type" : "object",
+        "properties" : {
+          "taxonId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "lineages" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "synonyms" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "scientificName" : {
+            "type" : "string"
+          },
+          "commonName" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "OverlapRegion" : {
+        "type" : "object",
+        "properties" : {
+          "end" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "start" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }
+      },
+      "ProblemPair" : {
+        "type" : "object",
+        "properties" : {
+          "code" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "message" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Property" : {
+        "type" : "object",
+        "properties" : {
+          "key" : {
+            "type" : "string"
+          },
+          "value" : {
+            "type" : "string"
+          }
+        }
+      },
+      "RepresentativeMember" : {
+        "type" : "object",
+        "properties" : {
+          "sequence" : {
+            "$ref" : "#/components/schemas/Sequence"
+          },
+          "uniProtAccessions" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "memberIdType" : {
+            "type" : "string",
+            "enum" : [ "UniProtKB Reviewed (Swiss-Prot)", "UniProtKB Unreviewed (TrEMBL)", "UniProtKB ID", "UniParc" ]
+          },
+          "memberId" : {
+            "type" : "string"
+          },
+          "organismName" : {
+            "type" : "string"
+          },
+          "organismTaxId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "sequenceLength" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "uniRef50Id" : {
+            "type" : "string"
+          },
+          "uniRef90Id" : {
+            "type" : "string"
+          },
+          "uniRef100Id" : {
+            "type" : "string"
+          },
+          "overlapRegion" : {
+            "$ref" : "#/components/schemas/OverlapRegion"
+          },
+          "seed" : {
+            "type" : "boolean"
+          },
+          "proteinName" : {
+            "type" : "string"
+          },
+          "uniParcId" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Sequence" : {
+        "type" : "object",
+        "properties" : {
+          "content" : {
+            "type" : "string"
+          },
+          "length" : {
+            "type" : "integer",
+            "format" : "int32",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "checksum" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          }
+        },
+        "xml" : {
+          "name" : "sequence",
+          "namespace" : "http://uniprot.org/uniparc"
+        }
+      },
+      "Suggestion" : {
+        "type" : "object",
+        "properties" : {
+          "query" : {
+            "type" : "string"
+          },
+          "hits" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "TermInfo" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "hits" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "UniRefEntryLight" : {
+        "type" : "object",
+        "properties" : {
+          "representativeMember" : {
+            "$ref" : "#/components/schemas/RepresentativeMember"
+          },
+          "updated" : {
+            "type" : "string",
+            "format" : "date"
+          },
+          "entryType" : {
+            "type" : "string",
+            "enum" : [ "UniRef100", "UniRef90", "UniRef50" ]
+          },
+          "commonTaxon" : {
+            "$ref" : "#/components/schemas/Organism"
+          },
+          "goTerms" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/GeneOntologyEntry"
+            }
+          },
+          "memberCount" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "organisms" : {
+            "uniqueItems" : true,
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Organism"
+            }
+          },
+          "organismCount" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "seedId" : {
+            "type" : "string"
+          },
+          "memberIdTypes" : {
+            "uniqueItems" : true,
+            "type" : "array",
+            "items" : {
+              "type" : "string",
+              "enum" : [ "UniProtKB Reviewed (Swiss-Prot)", "UniProtKB Unreviewed (TrEMBL)", "UniProtKB ID", "UniParc" ]
+            }
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "members" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      },
+      "UniRefEntryPair" : {
+        "type" : "object",
+        "properties" : {
+          "from" : {
+            "type" : "string"
+          },
+          "to" : {
+            "$ref" : "#/components/schemas/UniRefEntryLight"
+          }
+        }
+      },
+      "UniRefIdMappingSearchResult" : {
+        "type" : "object",
+        "properties" : {
+          "results" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/UniRefEntryPair"
+            }
+          },
+          "facets" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Facet"
+            }
+          },
+          "matchedFields" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TermInfo"
+            }
+          },
+          "suggestions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Suggestion"
+            }
+          },
+          "warnings" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ProblemPair"
+            }
+          },
+          "obsoleteCount" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "suggestedIds" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "failedIds" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      },
+      "UniRefStreamResult" : {
+        "type" : "object",
+        "properties" : {
+          "results" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/UniRefEntryPair"
+            }
+          },
+          "error" : {
+            "type" : "string"
+          }
+        }
+      },
+      "AlternativeSequence" : {
+        "type" : "object",
+        "properties" : {
+          "originalSequence" : {
+            "type" : "string"
+          },
+          "alternativeSequences" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      },
+      "Citation" : {
+        "type" : "object",
+        "properties" : {
+          "citationType" : {
+            "type" : "string",
+            "enum" : [ "journal article", "book", "online journal article", "patent", "submission", "thesis", "UniProt indexed literatures", "unpublished observations" ]
+          },
+          "citationCrossReferences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CrossReferenceCitationDatabase"
+            }
+          },
+          "authoringGroups" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "authors" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "publicationDate" : {
+            "type" : "string"
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          }
+        },
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/Book"
+        }, {
+          "$ref" : "#/components/schemas/ElectronicArticle"
+        }, {
+          "$ref" : "#/components/schemas/JournalArticle"
+        }, {
+          "$ref" : "#/components/schemas/Literature"
+        }, {
+          "$ref" : "#/components/schemas/Patent"
+        }, {
+          "$ref" : "#/components/schemas/Submission"
+        }, {
+          "$ref" : "#/components/schemas/Thesis"
+        } ]
+      },
+      "Comment" : {
+        "type" : "object",
+        "properties" : {
+          "commentType" : {
+            "type" : "string",
+            "enum" : [ "FUNCTION", "CATALYTIC ACTIVITY", "COFACTOR", "ACTIVITY REGULATION", "BIOPHYSICOCHEMICAL PROPERTIES", "PATHWAY", "SUBUNIT", "INTERACTION", "SUBCELLULAR LOCATION", "ALTERNATIVE PRODUCTS", "TISSUE SPECIFICITY", "DEVELOPMENTAL STAGE", "INDUCTION", "DOMAIN", "PTM", "RNA EDITING", "MASS SPECTROMETRY", "POLYMORPHISM", "DISEASE", "DISRUPTION PHENOTYPE", "ALLERGEN", "TOXIC DOSE", "BIOTECHNOLOGY", "PHARMACEUTICAL", "MISCELLANEOUS", "SIMILARITY", "CAUTION", "SEQUENCE CAUTION", "WEB RESOURCE", "UNKOWN" ]
+          }
+        },
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/AlternativeProductsComment"
+        }, {
+          "$ref" : "#/components/schemas/BPCPComment"
+        }, {
+          "$ref" : "#/components/schemas/CatalyticActivityComment"
+        }, {
+          "$ref" : "#/components/schemas/CofactorComment"
+        }, {
+          "$ref" : "#/components/schemas/DiseaseComment"
+        }, {
+          "$ref" : "#/components/schemas/FreeTextComment"
+        }, {
+          "$ref" : "#/components/schemas/InteractionComment"
+        }, {
+          "$ref" : "#/components/schemas/MassSpectrometryComment"
+        }, {
+          "$ref" : "#/components/schemas/RnaEditingComment"
+        }, {
+          "$ref" : "#/components/schemas/SequenceCautionComment"
+        }, {
+          "$ref" : "#/components/schemas/SubcellularLocationComment"
+        }, {
+          "$ref" : "#/components/schemas/WebResourceComment"
+        } ]
+      },
+      "CrossReferenceCitationDatabase" : {
+        "type" : "object",
+        "properties" : {
+          "database" : {
+            "type" : "string",
+            "enum" : [ "PubMed", "DOI", "AGRICOLA" ]
+          },
+          "properties" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Property"
+            }
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "CrossReferenceUniprotKBFeatureDatabase" : {
+        "type" : "object",
+        "properties" : {
+          "database" : {
+            "type" : "string",
+            "enum" : [ "dbSNP", "ChEBI" ]
+          },
+          "properties" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Property"
+            }
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "EC" : {
+        "type" : "object",
+        "properties" : {
+          "valid" : {
+            "type" : "boolean"
+          },
+          "value" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "EntryAudit" : {
+        "type" : "object",
+        "properties" : {
+          "firstPublicDate" : {
+            "type" : "string",
+            "format" : "date"
+          },
+          "sequenceVersion" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "lastAnnotationUpdateDate" : {
+            "type" : "string",
+            "format" : "date"
+          },
+          "lastSequenceUpdateDate" : {
+            "type" : "string",
+            "format" : "date"
+          },
+          "entryVersion" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }
+      },
+      "EntryInactiveReason" : {
+        "type" : "object",
+        "properties" : {
+          "mergeDemergeTos" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "deletedReason" : {
+            "type" : "string",
+            "enum" : [ "", "Undefined", "Deleted from sequence source (EMBL)", "Deleted from sequence source (TAIR)", "Deleted from sequence source (SGD)", "Deleted from sequence source (ENSEMBL)", "Deleted from sequence source (PDB)", "Deleted from sequence source (RefSeq)", "Deleted from Swiss-Prot", "Redundant sequence", "Redundant proteome", "Excluded proteome", "Over-represented sequence", "Not part of a reference proteome" ]
+          },
+          "inactiveReasonType" : {
+            "type" : "string",
+            "enum" : [ "DELETED", "MERGED", "DEMERGED" ]
+          }
+        }
+      },
+      "EvidenceLine" : {
+        "type" : "object",
+        "properties" : {
+          "createDate" : {
+            "type" : "string",
+            "format" : "date"
+          },
+          "curator" : {
+            "type" : "string"
+          },
+          "evidence" : {
+            "type" : "string"
+          }
+        }
+      },
+      "FeatureLocation" : {
+        "type" : "object",
+        "properties" : {
+          "start" : {
+            "$ref" : "#/components/schemas/Position"
+          },
+          "end" : {
+            "$ref" : "#/components/schemas/Position"
+          },
+          "sequence" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Gene" : {
+        "type" : "object",
+        "properties" : {
+          "orfNames" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ORFName"
+            }
+          },
+          "orderedLocusNames" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/OrderedLocusName"
+            }
+          },
+          "synonyms" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/GeneNameSynonym"
+            }
+          },
+          "geneName" : {
+            "$ref" : "#/components/schemas/GeneName"
+          }
+        }
+      },
+      "GeneLocation" : {
+        "type" : "object",
+        "properties" : {
+          "geneEncodingType" : {
+            "type" : "string",
+            "enum" : [ "unknown", "Hydrogenosome", "Mitochondrion", "Nucleomorph", "Plasmid", "Plastid", "Apicoplast", "Chloroplast", "Cyanelle", "Non-photosynthetic plastid", "Organellar chromatophore" ]
+          },
+          "value" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "GeneName" : {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "GeneNameSynonym" : {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "InternalLine" : {
+        "type" : "object",
+        "properties" : {
+          "type" : {
+            "type" : "string",
+            "enum" : [ "CL", "CP", "CX", "DR", "DG", "GO", "EV", "HA", "HR", "HW", "HU", "HP", "ID", "IS", "NI", "PM", "SO", "YY", "ZA", "ZB", "ZC", "ZR", "ZZ", "ET", "PE", "RU", "TX", "PROSITE", "UP", "ZD" ]
+          },
+          "value" : {
+            "type" : "string"
+          }
+        }
+      },
+      "InternalSection" : {
+        "type" : "object",
+        "properties" : {
+          "internalLines" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/InternalLine"
+            }
+          },
+          "sourceLines" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/SourceLine"
+            }
+          },
+          "evidenceLines" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EvidenceLine"
+            }
+          }
+        }
+      },
+      "Keyword" : {
+        "type" : "object",
+        "properties" : {
+          "category" : {
+            "type" : "string",
+            "enum" : [ "Biological process", "Cellular component", "Coding sequence diversity", "Developmental stage", "Disease", "Domain", "Ligand", "Molecular function", "PTM", "Technical term", "Unknown" ]
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "Ligand" : {
+        "type" : "object",
+        "properties" : {
+          "note" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "label" : {
+            "type" : "string"
+          }
+        }
+      },
+      "LigandPart" : {
+        "type" : "object",
+        "properties" : {
+          "note" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "label" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Name" : {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "string"
+          },
+          "evidence" : {
+            "type" : "array",
+            "items" : {
+              "type" : "integer",
+              "format" : "int32"
+            }
+          }
+        }
+      },
+      "ORFName" : {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "OrderedLocusName" : {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "OrganismHost" : {
+        "type" : "object",
+        "properties" : {
+          "taxonId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "synonyms" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "scientificName" : {
+            "type" : "string"
+          },
+          "commonName" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Position" : {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "modifier" : {
+            "type" : "string",
+            "enum" : [ "EXACT", "OUTSIDE", "UNKNOWN", "UNSURE" ]
+          }
+        }
+      },
+      "ProteinDescription" : {
+        "type" : "object",
+        "properties" : {
+          "recommendedName" : {
+            "$ref" : "#/components/schemas/ProteinName"
+          },
+          "submissionNames" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ProteinSubName"
+            }
+          },
+          "allergenName" : {
+            "$ref" : "#/components/schemas/Name"
+          },
+          "biotechName" : {
+            "$ref" : "#/components/schemas/Name"
+          },
+          "cdAntigenNames" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Name"
+            }
+          },
+          "alternativeNames" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ProteinName"
+            }
+          },
+          "innNames" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Name"
+            }
+          },
+          "includes" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ProteinSection"
+            }
+          },
+          "contains" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ProteinSection"
+            }
+          },
+          "flag" : {
+            "type" : "string"
+          }
+        }
+      },
+      "ProteinName" : {
+        "type" : "object",
+        "properties" : {
+          "shortNames" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Name"
+            }
+          },
+          "ecNumbers" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EC"
+            }
+          },
+          "valid" : {
+            "type" : "boolean"
+          },
+          "fullName" : {
+            "$ref" : "#/components/schemas/Name"
+          }
+        }
+      },
+      "ProteinSection" : {
+        "type" : "object",
+        "properties" : {
+          "recommendedName" : {
+            "$ref" : "#/components/schemas/ProteinName"
+          },
+          "allergenName" : {
+            "$ref" : "#/components/schemas/Name"
+          },
+          "biotechName" : {
+            "$ref" : "#/components/schemas/Name"
+          },
+          "cdAntigenNames" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Name"
+            }
+          },
+          "alternativeNames" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ProteinName"
+            }
+          },
+          "innNames" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Name"
+            }
+          }
+        }
+      },
+      "ProteinSubName" : {
+        "type" : "object",
+        "properties" : {
+          "ecNumbers" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EC"
+            }
+          },
+          "valid" : {
+            "type" : "boolean"
+          },
+          "fullName" : {
+            "$ref" : "#/components/schemas/Name"
+          }
+        }
+      },
+      "ReferenceComment" : {
+        "type" : "object",
+        "properties" : {
+          "type" : {
+            "type" : "string",
+            "enum" : [ "STRAIN", "PLASMID", "TRANSPOSON", "TISSUE" ]
+          },
+          "value" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "SourceLine" : {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "string"
+          }
+        }
+      },
+      "TaxonomyLineage" : {
+        "type" : "object",
+        "properties" : {
+          "rank" : {
+            "type" : "string",
+            "enum" : [ "strain", "serotype", "series", "morph", "biotype", "clade", "genotype", "isolate", "forma specialis", "pathogroup", "serogroup", "section", "subsection", "forma", "varietas", "subspecies", "species", "species subgroup", "species group", "subgenus", "genus", "subtribe", "tribe", "subfamily", "family", "superfamily", "parvorder", "infraorder", "suborder", "order", "superorder", "subcohort", "cohort", "infraclass", "subclass", "class", "superclass", "subphylum", "phylum", "superphylum", "subkingdom", "kingdom", "superkingdom", "realm", "domain", "subvariety", "acellular root", "cellular root", "no rank" ]
+          },
+          "taxonId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "hidden" : {
+            "type" : "boolean"
+          },
+          "synonyms" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "scientificName" : {
+            "type" : "string"
+          },
+          "commonName" : {
+            "type" : "string"
+          }
+        }
+      },
+      "UniProtDatabaseAttribute" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "xmlTag" : {
+            "type" : "string"
+          },
+          "uriLink" : {
+            "type" : "string"
+          }
+        }
+      },
+      "UniProtDatabaseDetail" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "displayName" : {
+            "type" : "string"
+          },
+          "category" : {
+            "type" : "string",
+            "enum" : [ "Sequence databases", "3D structure databases", "Protein-protein interaction databases", "Chemistry", "Protein family/group databases", "PTM databases", "Genetic variation databases", "2D gel databases", "Proteomic databases", "Protocols and materials databases", "Genome annotation databases", "Organism-specific databases", "Phylogenomic databases", "Enzyme and pathway databases", "Miscellaneous", "Gene expression databases", "Family and domain databases", "Ontologies", "Proteomes databases", "Unknown" ]
+          },
+          "uniProtDataTypes" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "uriLink" : {
+            "type" : "string"
+          },
+          "attributes" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/UniProtDatabaseAttribute"
+            }
+          },
+          "implicit" : {
+            "type" : "boolean"
+          },
+          "linkedReason" : {
+            "type" : "string"
+          },
+          "idMappingName" : {
+            "type" : "string"
+          },
+          "type" : {
+            "type" : "string"
+          }
+        }
+      },
+      "UniProtKBCrossReference" : {
+        "type" : "object",
+        "properties" : {
+          "isoformId" : {
+            "type" : "string"
+          },
+          "database" : {
+            "type" : "string"
+          },
+          "properties" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Property"
+            }
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "UniProtKBEntry" : {
+        "type" : "object",
+        "properties" : {
+          "entryType" : {
+            "type" : "string",
+            "enum" : [ "UniProtKB reviewed (Swiss-Prot)", "UniProtKB unreviewed (TrEMBL)", "Inactive", "UNKNOWN" ]
+          },
+          "secondaryAccessions" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "proteinDescription" : {
+            "$ref" : "#/components/schemas/ProteinDescription"
+          },
+          "uniProtKBCrossReferences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/UniProtKBCrossReference"
+            }
+          },
+          "geneLocations" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/GeneLocation"
+            }
+          },
+          "keywords" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Keyword"
+            }
+          },
+          "sequence" : {
+            "$ref" : "#/components/schemas/Sequence"
+          },
+          "internalSection" : {
+            "$ref" : "#/components/schemas/InternalSection"
+          },
+          "fragment" : {
+            "type" : "boolean"
+          },
+          "annotationScore" : {
+            "type" : "number",
+            "format" : "double"
+          },
+          "entryAudit" : {
+            "$ref" : "#/components/schemas/EntryAudit"
+          },
+          "organismHosts" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/OrganismHost"
+            }
+          },
+          "genes" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Gene"
+            }
+          },
+          "comments" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Comment"
+            }
+          },
+          "organism" : {
+            "$ref" : "#/components/schemas/Organism"
+          },
+          "inactiveReason" : {
+            "$ref" : "#/components/schemas/EntryInactiveReason"
+          },
+          "uniProtkbId" : {
+            "type" : "string"
+          },
+          "proteinExistence" : {
+            "type" : "string",
+            "enum" : [ "1: Evidence at protein level", "2: Evidence at transcript level", "3: Inferred from homology", "4: Predicted", "5: Uncertain", "UNKNOWN" ]
+          },
+          "lineages" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TaxonomyLineage"
+            }
+          },
+          "primaryAccession" : {
+            "type" : "string"
+          },
+          "features" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/UniProtKBFeature"
+            }
+          },
+          "references" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/UniProtKBReference"
+            }
+          },
+          "active" : {
+            "type" : "boolean"
+          },
+          "extraAttributes" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "object"
+            }
+          }
+        }
+      },
+      "UniProtKBEntryPair" : {
+        "type" : "object",
+        "properties" : {
+          "from" : {
+            "type" : "string"
+          },
+          "to" : {
+            "$ref" : "#/components/schemas/UniProtKBEntry"
+          }
+        }
+      },
+      "UniProtKBFeature" : {
+        "type" : "object",
+        "properties" : {
+          "alternativeSequence" : {
+            "$ref" : "#/components/schemas/AlternativeSequence"
+          },
+          "featureId" : {
+            "type" : "string"
+          },
+          "ligand" : {
+            "$ref" : "#/components/schemas/Ligand"
+          },
+          "ligandPart" : {
+            "$ref" : "#/components/schemas/LigandPart"
+          },
+          "featureCrossReferences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CrossReferenceUniprotKBFeatureDatabase"
+            }
+          },
+          "location" : {
+            "$ref" : "#/components/schemas/FeatureLocation"
+          },
+          "type" : {
+            "type" : "string",
+            "enum" : [ "Initiator methionine", "Signal", "Propeptide", "Transit peptide", "Chain", "Peptide", "Topological domain", "Transmembrane", "Intramembrane", "Domain", "Repeat", "Calcium binding", "Zinc finger", "DNA binding", "Nucleotide binding", "Region", "Coiled coil", "Motif", "Compositional bias", "Active site", "Metal binding", "Binding site", "Site", "Non-standard residue", "Modified residue", "Lipidation", "Glycosylation", "Disulfide bond", "Cross-link", "Alternative sequence", "Natural variant", "Mutagenesis", "Sequence uncertainty", "Sequence conflict", "Non-adjacent residues", "Non-terminal residue", "Helix", "Turn", "Beta strand" ]
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "UniProtKBIdMappingSearchResult" : {
+        "type" : "object",
+        "properties" : {
+          "results" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/UniProtKBEntryPair"
+            }
+          },
+          "facets" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Facet"
+            }
+          },
+          "matchedFields" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TermInfo"
+            }
+          },
+          "suggestions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Suggestion"
+            }
+          },
+          "warnings" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ProblemPair"
+            }
+          },
+          "obsoleteCount" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "suggestedIds" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "failedIds" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      },
+      "UniProtKBReference" : {
+        "type" : "object",
+        "properties" : {
+          "referenceComments" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ReferenceComment"
+            }
+          },
+          "citation" : {
+            "$ref" : "#/components/schemas/Citation"
+          },
+          "referencePositions" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "referenceNumber" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "DbReferenceType" : {
+        "type" : "object",
+        "properties" : {
+          "property" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/PropertyType"
+            }
+          },
+          "type" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "id" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "versionI" : {
+            "type" : "integer",
+            "format" : "int32",
+            "xml" : {
+              "name" : "version_i",
+              "attribute" : true
+            }
+          },
+          "active" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int32",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "created" : {
+            "type" : "string",
+            "format" : "date-time",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "last" : {
+            "type" : "string",
+            "format" : "date-time",
+            "xml" : {
+              "attribute" : true
+            }
+          }
+        }
+      },
+      "Entry" : {
+        "required" : [ "accession", "sequence" ],
+        "type" : "object",
+        "properties" : {
+          "accession" : {
+            "type" : "string"
+          },
+          "dbReference" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/DbReferenceType"
+            }
+          },
+          "signatureSequenceMatch" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/SeqFeatureType"
+            }
+          },
+          "sequence" : {
+            "$ref" : "#/components/schemas/Sequence"
+          },
+          "dataset" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "uniProtKBExclusion" : {
+            "type" : "string",
+            "xml" : {
+              "name" : "UniProtKB_exclusion",
+              "attribute" : true
+            }
+          }
+        },
+        "xml" : {
+          "name" : "entry",
+          "namespace" : "http://uniprot.org/uniparc"
+        }
+      },
+      "LocationType" : {
+        "type" : "object",
+        "properties" : {
+          "start" : {
+            "type" : "integer",
+            "format" : "int32",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "end" : {
+            "type" : "integer",
+            "format" : "int32",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "alignment" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          }
+        }
+      },
+      "PropertyType" : {
+        "type" : "object",
+        "properties" : {
+          "type" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "value" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          }
+        }
+      },
+      "UniProtKBStreamResult" : {
+        "type" : "object",
+        "properties" : {
+          "results" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/UniProtKBEntryPair"
+            }
+          },
+          "error" : {
+            "type" : "string"
+          }
+        }
+      },
+      "InterProGroup" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "SequenceFeature" : {
+        "type" : "object",
+        "properties" : {
+          "interProDomain" : {
+            "$ref" : "#/components/schemas/InterProGroup"
+          },
+          "signatureDbType" : {
+            "type" : "string",
+            "enum" : [ "CDD", "Gene3D", "HAMAP", "PANTHER", "Pfam", "PIRSF", "PRINTS", "PROSITE", "SFLD", "SMART", "SUPFAM", "NCBIfam", "FunFam", "PIRSR" ]
+          },
+          "signatureDbId" : {
+            "type" : "string"
+          },
+          "locations" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/SequenceFeatureLocation"
+            }
+          }
+        }
+      },
+      "SequenceFeatureLocation" : {
+        "type" : "object",
+        "properties" : {
+          "alignment" : {
+            "type" : "string"
+          },
+          "end" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "start" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }
+      },
+      "UniParcCrossReference" : {
+        "type" : "object",
+        "properties" : {
+          "created" : {
+            "type" : "string",
+            "format" : "date"
+          },
+          "chain" : {
+            "type" : "string"
+          },
+          "lastUpdated" : {
+            "type" : "string",
+            "format" : "date"
+          },
+          "proteinName" : {
+            "type" : "string"
+          },
+          "geneName" : {
+            "type" : "string"
+          },
+          "proteomeId" : {
+            "type" : "string"
+          },
+          "organism" : {
+            "$ref" : "#/components/schemas/Organism"
+          },
+          "component" : {
+            "type" : "string"
+          },
+          "versionI" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "ncbiGi" : {
+            "type" : "string"
+          },
+          "active" : {
+            "type" : "boolean"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "database" : {
+            "type" : "string",
+            "enum" : [ "EnsemblBacteria", "EnsemblFungi", "EnsemblMetazoa", "EnsemblPlants", "EnsemblProtists", "EMBL", "EMBL_CON", "EMBL_TPA", "EMBL_TSA", "EMBLWGS", "Ensembl", "EnsemblRapid", "EPO", "FlyBase", "FusionGDB", "H-InvDB", "IPI", "JPO", "KIPO", "PATRIC", "PDB", "PIR", "PIRARC", "PRF", "RefSeq", "REMTREMBL", "SEED", "SGD", "UniProtKB/Swiss-Prot", "UniProtKB/Swiss-Prot protein isoforms", "TAIR", "UniProtKB/TrEMBL", "TREMBLNEW", "TREMBL_VARSPLIC", "TROME", "UNIMES", "USPTO", "VectorBase", "VEGA", "WBParaSite", "WormBase" ]
+          },
+          "properties" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Property"
+            }
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "UniParcEntry" : {
+        "type" : "object",
+        "properties" : {
+          "sequence" : {
+            "$ref" : "#/components/schemas/Sequence"
+          },
+          "sequenceFeatures" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/SequenceFeature"
+            }
+          },
+          "oldestCrossRefCreated" : {
+            "type" : "string",
+            "format" : "date"
+          },
+          "mostRecentCrossRefUpdated" : {
+            "type" : "string",
+            "format" : "date"
+          },
+          "uniParcId" : {
+            "type" : "string"
+          },
+          "uniParcCrossReferences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/UniParcCrossReference"
+            }
+          },
+          "uniProtExclusionReason" : {
+            "type" : "string"
+          }
+        }
+      },
+      "UniParcEntryPair" : {
+        "type" : "object",
+        "properties" : {
+          "from" : {
+            "type" : "string"
+          },
+          "to" : {
+            "$ref" : "#/components/schemas/UniParcEntry"
+          }
+        }
+      },
+      "UniParcIdMappingSearchResult" : {
+        "type" : "object",
+        "properties" : {
+          "results" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/UniParcEntryPair"
+            }
+          },
+          "facets" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Facet"
+            }
+          },
+          "matchedFields" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TermInfo"
+            }
+          },
+          "suggestions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Suggestion"
+            }
+          },
+          "warnings" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ProblemPair"
+            }
+          },
+          "obsoleteCount" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "suggestedIds" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "failedIds" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      },
+      "SeqFeatureGroupType" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "id" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          }
+        }
+      },
+      "SeqFeatureType" : {
+        "required" : [ "lcn" ],
+        "type" : "object",
+        "properties" : {
+          "ipr" : {
+            "$ref" : "#/components/schemas/SeqFeatureGroupType"
+          },
+          "lcn" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/LocationType"
+            }
+          },
+          "database" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "id" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          }
+        }
+      },
+      "UniParcStreamResult" : {
+        "type" : "object",
+        "properties" : {
+          "results" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/UniParcEntryPair"
+            }
+          },
+          "error" : {
+            "type" : "string"
+          }
+        }
+      },
+      "SimpleStreamResult" : {
+        "type" : "object",
+        "properties" : {
+          "results" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "error" : {
+            "type" : "string"
+          }
+        }
+      },
+      "JobStatusResponse" : {
+        "type" : "object",
+        "properties" : {
+          "jobStatus" : {
+            "type" : "string",
+            "enum" : [ "NEW", "RUNNING", "PROCESSING", "UNFINISHED", "FINISHED", "ERROR", "ABORTED" ]
+          },
+          "warnings" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ProblemPair"
+            }
+          },
+          "errors" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ProblemPair"
+            }
+          },
+          "start" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "totalEntries" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "processedEntries" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "lastUpdated" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        }
+      },
+      "SimpleIdMappingSearchResult" : {
+        "type" : "object",
+        "properties" : {
+          "results" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "facets" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Facet"
+            }
+          },
+          "matchedFields" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TermInfo"
+            }
+          },
+          "suggestions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Suggestion"
+            }
+          },
+          "warnings" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ProblemPair"
+            }
+          },
+          "obsoleteCount" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "suggestedIds" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "failedIds" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      },
+      "IdMappingPageRequest" : {
+        "type" : "object",
+        "properties" : {
+          "cursor" : {
+            "type" : "string"
+          },
+          "size" : {
+            "maximum" : 500,
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }
+      },
+      "JobDetailResponse" : {
+        "required" : [ "from", "ids", "to" ],
+        "type" : "object",
+        "properties" : {
+          "from" : {
+            "type" : "string"
+          },
+          "to" : {
+            "type" : "string"
+          },
+          "ids" : {
+            "type" : "string"
+          },
+          "taxId" : {
+            "type" : "string"
+          },
+          "redirectURL" : {
+            "type" : "string"
+          },
+          "query" : {
+            "type" : "string"
+          },
+          "includeIsoform" : {
+            "type" : "boolean"
+          },
+          "warnings" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ProblemPair"
+            }
+          },
+          "errors" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ProblemPair"
+            }
+          }
+        }
+      },
+      "AlternativeProductsComment" : {
+        "type" : "object",
+        "properties" : {
+          "isoforms" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/APIsoform"
+            }
+          },
+          "note" : {
+            "$ref" : "#/components/schemas/Note"
+          },
+          "events" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string",
+              "enum" : [ "Alternative promoter usage", "Alternative splicing", "Alternative initiation", "Ribosomal frameshifting" ]
+            }
+          }
+        }
+      },
+      "MichaelisConstant" : {
+        "type" : "object",
+        "properties" : {
+          "substrate" : {
+            "type" : "string"
+          },
+          "constant" : {
+            "type" : "number",
+            "format" : "double"
+          },
+          "unit" : {
+            "type" : "string",
+            "enum" : [ "M", "mM", "uM", "nM", "mg/mL", "mg/ml" ]
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "PhDependence" : {
+        "type" : "object",
+        "properties" : {
+          "texts" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EvidencedValue"
+            }
+          }
+        }
+      },
+      "SequenceCautionComment" : {
+        "type" : "object",
+        "properties" : {
+          "sequenceCautionType" : {
+            "type" : "string",
+            "enum" : [ "Frameshift", "Erroneous initiation", "Erroneous termination", "Erroneous gene model prediction", "Erroneous translation", "Miscellaneous discrepancy", "unknown" ]
+          },
+          "note" : {
+            "type" : "string"
+          },
+          "sequence" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          },
+          "molecule" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Disease" : {
+        "type" : "object",
+        "properties" : {
+          "diseaseId" : {
+            "type" : "string"
+          },
+          "acronym" : {
+            "type" : "string"
+          },
+          "diseaseAccession" : {
+            "type" : "string"
+          },
+          "diseaseCrossReference" : {
+            "$ref" : "#/components/schemas/CrossReferenceDiseaseDatabase"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "Interactant" : {
+        "type" : "object",
+        "properties" : {
+          "chainId" : {
+            "type" : "string"
+          },
+          "intActId" : {
+            "type" : "string"
+          },
+          "geneName" : {
+            "type" : "string"
+          },
+          "uniProtKBAccession" : {
+            "type" : "string"
+          }
+        }
+      },
+      "MaximumVelocity" : {
+        "type" : "object",
+        "properties" : {
+          "velocity" : {
+            "type" : "number",
+            "format" : "double"
+          },
+          "enzyme" : {
+            "type" : "string"
+          },
+          "unit" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "RedoxPotential" : {
+        "type" : "object",
+        "properties" : {
+          "texts" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EvidencedValue"
+            }
+          }
+        }
+      },
+      "IsoformName" : {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "Cofactor" : {
+        "type" : "object",
+        "properties" : {
+          "cofactorCrossReference" : {
+            "$ref" : "#/components/schemas/CrossReferenceCofactorDatabase"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "SubcellularLocationValue" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "value" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "FreeTextComment" : {
+        "type" : "object",
+        "properties" : {
+          "texts" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EvidencedValue"
+            }
+          },
+          "molecule" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Absorption" : {
+        "type" : "object",
+        "properties" : {
+          "approximate" : {
+            "type" : "boolean"
+          },
+          "note" : {
+            "$ref" : "#/components/schemas/Note"
+          },
+          "max" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "CatalyticActivityComment" : {
+        "type" : "object",
+        "properties" : {
+          "physiologicalReactions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/PhysiologicalReaction"
+            }
+          },
+          "reaction" : {
+            "$ref" : "#/components/schemas/Reaction"
+          },
+          "molecule" : {
+            "type" : "string"
+          }
+        }
+      },
+      "TemperatureDependence" : {
+        "type" : "object",
+        "properties" : {
+          "texts" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EvidencedValue"
+            }
+          }
+        }
+      },
+      "DiseaseComment" : {
+        "type" : "object",
+        "properties" : {
+          "disease" : {
+            "$ref" : "#/components/schemas/Disease"
+          },
+          "note" : {
+            "$ref" : "#/components/schemas/Note"
+          },
+          "molecule" : {
+            "type" : "string"
+          }
+        }
+      },
+      "CrossReferenceReactionDatabase" : {
+        "type" : "object",
+        "properties" : {
+          "database" : {
+            "type" : "string",
+            "enum" : [ "ChEBI", "Rhea" ]
+          },
+          "properties" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Property"
+            }
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "PhysiologicalReaction" : {
+        "type" : "object",
+        "properties" : {
+          "reactionCrossReference" : {
+            "$ref" : "#/components/schemas/CrossReferenceReactionDatabase"
+          },
+          "directionType" : {
+            "type" : "string",
+            "enum" : [ "left-to-right", "right-to-left" ]
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "EvidencedValue" : {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "WebResourceComment" : {
+        "type" : "object",
+        "properties" : {
+          "ftp" : {
+            "type" : "boolean"
+          },
+          "resourceUrl" : {
+            "type" : "string"
+          },
+          "note" : {
+            "type" : "string"
+          },
+          "resourceName" : {
+            "type" : "string"
+          },
+          "molecule" : {
+            "type" : "string"
+          }
+        }
+      },
+      "CofactorComment" : {
+        "type" : "object",
+        "properties" : {
+          "cofactors" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Cofactor"
+            }
+          },
+          "note" : {
+            "$ref" : "#/components/schemas/Note"
+          },
+          "valid" : {
+            "type" : "boolean"
+          },
+          "molecule" : {
+            "type" : "string"
+          }
+        }
+      },
+      "RnaEditingComment" : {
+        "type" : "object",
+        "properties" : {
+          "positions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/RnaEdPosition"
+            }
+          },
+          "locationType" : {
+            "type" : "string",
+            "enum" : [ "Not_applicable", "Undetermined", "Unknown", "Known" ]
+          },
+          "note" : {
+            "$ref" : "#/components/schemas/Note"
+          },
+          "molecule" : {
+            "type" : "string"
+          }
+        }
+      },
+      "InteractionComment" : {
+        "type" : "object",
+        "properties" : {
+          "interactions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Interaction"
+            }
+          }
+        }
+      },
+      "RnaEdPosition" : {
+        "type" : "object",
+        "properties" : {
+          "position" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "Interaction" : {
+        "type" : "object",
+        "properties" : {
+          "numberOfExperiments" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "interactantOne" : {
+            "$ref" : "#/components/schemas/Interactant"
+          },
+          "organismDiffer" : {
+            "type" : "boolean"
+          },
+          "interactantTwo" : {
+            "$ref" : "#/components/schemas/Interactant"
+          }
+        }
+      },
+      "CrossReferenceCofactorDatabase" : {
+        "type" : "object",
+        "properties" : {
+          "database" : {
+            "type" : "string",
+            "enum" : [ "ChEBI", "" ]
+          },
+          "properties" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Property"
+            }
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "BPCPComment" : {
+        "type" : "object",
+        "properties" : {
+          "kineticParameters" : {
+            "$ref" : "#/components/schemas/KineticParameters"
+          },
+          "temperatureDependence" : {
+            "$ref" : "#/components/schemas/TemperatureDependence"
+          },
+          "absorption" : {
+            "$ref" : "#/components/schemas/Absorption"
+          },
+          "phDependence" : {
+            "$ref" : "#/components/schemas/PhDependence"
+          },
+          "redoxPotential" : {
+            "$ref" : "#/components/schemas/RedoxPotential"
+          },
+          "molecule" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Reaction" : {
+        "type" : "object",
+        "properties" : {
+          "reactionCrossReferences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CrossReferenceReactionDatabase"
+            }
+          },
+          "ecNumber" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "SubcellularLocationComment" : {
+        "type" : "object",
+        "properties" : {
+          "subcellularLocations" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/SubcellularLocation"
+            }
+          },
+          "note" : {
+            "$ref" : "#/components/schemas/Note"
+          },
+          "molecule" : {
+            "type" : "string"
+          }
+        }
+      },
+      "APIsoform" : {
+        "type" : "object",
+        "properties" : {
+          "isoformSequenceStatus" : {
+            "type" : "string",
+            "enum" : [ "Displayed", "External", "Not described", "Described" ]
+          },
+          "isoformIds" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "sequenceIds" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "note" : {
+            "$ref" : "#/components/schemas/Note"
+          },
+          "synonyms" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/IsoformName"
+            }
+          },
+          "name" : {
+            "$ref" : "#/components/schemas/IsoformName"
+          }
+        }
+      },
+      "KineticParameters" : {
+        "type" : "object",
+        "properties" : {
+          "maximumVelocities" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/MaximumVelocity"
+            }
+          },
+          "michaelisConstants" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/MichaelisConstant"
+            }
+          },
+          "note" : {
+            "$ref" : "#/components/schemas/Note"
+          }
+        }
+      },
+      "Note" : {
+        "type" : "object",
+        "properties" : {
+          "valid" : {
+            "type" : "boolean"
+          },
+          "texts" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EvidencedValue"
+            }
+          }
+        }
+      },
+      "CrossReferenceDiseaseDatabase" : {
+        "type" : "object",
+        "properties" : {
+          "database" : {
+            "type" : "string",
+            "enum" : [ "MIM", "" ]
+          },
+          "properties" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Property"
+            }
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "MassSpectrometryComment" : {
+        "type" : "object",
+        "properties" : {
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          },
+          "molWeight" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "molWeightError" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "note" : {
+            "type" : "string"
+          },
+          "method" : {
+            "type" : "string",
+            "enum" : [ "Electrospray", "FAB", "LSI", "MALDI", "Plasma desorption", "SELDI", "API", "Unknown" ]
+          },
+          "molecule" : {
+            "type" : "string"
+          }
+        }
+      },
+      "SubcellularLocation" : {
+        "type" : "object",
+        "properties" : {
+          "orientation" : {
+            "$ref" : "#/components/schemas/SubcellularLocationValue"
+          },
+          "topology" : {
+            "$ref" : "#/components/schemas/SubcellularLocationValue"
+          },
+          "location" : {
+            "$ref" : "#/components/schemas/SubcellularLocationValue"
+          }
+        }
+      },
+      "Literature" : {
+        "type" : "object",
+        "properties" : {
+          "literatureAbstract" : {
+            "type" : "string"
+          },
+          "completeAuthorList" : {
+            "type" : "boolean"
+          },
+          "pubmedId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "doiId" : {
+            "type" : "string"
+          },
+          "firstPage" : {
+            "type" : "string"
+          },
+          "lastPage" : {
+            "type" : "string"
+          },
+          "volume" : {
+            "type" : "string"
+          },
+          "journal" : {
+            "type" : "string"
+          },
+          "citationCrossReferences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CrossReferenceCitationDatabase"
+            }
+          },
+          "authoringGroups" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "authors" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "publicationDate" : {
+            "type" : "string"
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Submission" : {
+        "type" : "object",
+        "properties" : {
+          "submissionDatabase" : {
+            "type" : "string",
+            "enum" : [ "PDB data bank", "PIR data bank", "Swiss-Prot", "UniProtKB", "EMBL/GenBank/DDBJ databases" ]
+          },
+          "citationCrossReferences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CrossReferenceCitationDatabase"
+            }
+          },
+          "authoringGroups" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "authors" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "publicationDate" : {
+            "type" : "string"
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "ElectronicArticle" : {
+        "type" : "object",
+        "properties" : {
+          "journal" : {
+            "type" : "string"
+          },
+          "locator" : {
+            "type" : "string"
+          },
+          "citationCrossReferences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CrossReferenceCitationDatabase"
+            }
+          },
+          "authoringGroups" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "authors" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "publicationDate" : {
+            "type" : "string"
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Thesis" : {
+        "type" : "object",
+        "properties" : {
+          "institute" : {
+            "type" : "string"
+          },
+          "address" : {
+            "type" : "string"
+          },
+          "citationCrossReferences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CrossReferenceCitationDatabase"
+            }
+          },
+          "authoringGroups" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "authors" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "publicationDate" : {
+            "type" : "string"
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Book" : {
+        "type" : "object",
+        "properties" : {
+          "bookName" : {
+            "type" : "string"
+          },
+          "editors" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "firstPage" : {
+            "type" : "string"
+          },
+          "lastPage" : {
+            "type" : "string"
+          },
+          "volume" : {
+            "type" : "string"
+          },
+          "publisher" : {
+            "type" : "string"
+          },
+          "address" : {
+            "type" : "string"
+          },
+          "citationCrossReferences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CrossReferenceCitationDatabase"
+            }
+          },
+          "authoringGroups" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "authors" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "publicationDate" : {
+            "type" : "string"
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Patent" : {
+        "type" : "object",
+        "properties" : {
+          "patentNumber" : {
+            "type" : "string"
+          },
+          "citationCrossReferences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CrossReferenceCitationDatabase"
+            }
+          },
+          "authoringGroups" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "authors" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "publicationDate" : {
+            "type" : "string"
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "JournalArticle" : {
+        "type" : "object",
+        "properties" : {
+          "firstPage" : {
+            "type" : "string"
+          },
+          "lastPage" : {
+            "type" : "string"
+          },
+          "volume" : {
+            "type" : "string"
+          },
+          "journal" : {
+            "type" : "string"
+          },
+          "citationCrossReferences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CrossReferenceCitationDatabase"
+            }
+          },
+          "authoringGroups" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "authors" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "publicationDate" : {
+            "type" : "string"
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      }
+    }
+  }
+}

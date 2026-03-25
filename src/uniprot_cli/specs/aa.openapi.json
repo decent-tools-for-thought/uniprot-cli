@@ -1,0 +1,2013 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "OpenAPI definition",
+    "version" : "v0"
+  },
+  "servers" : [ {
+    "url" : "https://rest.uniprot.org/",
+    "description" : "UniProt REST API Server"
+  } ],
+  "tags" : [ {
+    "name" : "UniRule",
+    "description" : "The unified rule(UniRule) resource for automatic annotation in the UniProt Knowledgebase "
+  }, {
+    "name" : "ARBA",
+    "description" : "The Association-Rule-Based Annotator(ARBA) resource for automatic annotation in the UniProt Knowledgebase "
+  } ],
+  "paths" : {
+    "/unirule/{uniruleid}" : {
+      "get" : {
+        "tags" : [ "UniRule" ],
+        "summary" : "Get UniRule entry by a single accession.",
+        "description" : "Search UniRule entry by id to return all data associated with that entry. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "getByUniRuleId",
+        "parameters" : [ {
+          "name" : "uniruleid",
+          "in" : "path",
+          "description" : "Get UniRule entry by an accession",
+          "required" : true,
+          "schema" : {
+            "pattern" : "UR[0-9]{9}|MF_[0-9]{5}|PIRSR[0-9]+(\\-[0-9]+)?|PIRNR[0-9]+|RU[0-9]{6}|PRU[0-9]{5}",
+            "type" : "string"
+          },
+          "example" : "UR000000076"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/unirule/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "rule_id,statistics,taxonomic_scope,annotation_covered"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UniRuleEntry"
+                }
+              },
+              "text/plain;format=tsv" : { },
+              "text/plain;format=list" : { },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { }
+            }
+          }
+        }
+      }
+    },
+    "/unirule/stream" : {
+      "get" : {
+        "tags" : [ "UniRule" ],
+        "summary" : "Download UniRule entries retrieved by a search query.",
+        "description" : "The stream endpoint uses a request query to return all entries associated with the search term in a single download. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "stream",
+        "parameters" : [ {
+          "name" : "query",
+          "in" : "query",
+          "description" : "Criteria to search UniRule. Advanced queries can be built with parentheses and conditionals such as AND, OR and NOT. <a href='https://rest.uniprot.org/configure/unirule/search-fields' target='_blank' rel='noopener noreferrer'>List of valid search fields</a>",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "Eukaryota"
+        }, {
+          "name" : "sort",
+          "in" : "query",
+          "description" : "Specify field by which to sort results. <a href='https://rest.uniprot.org/configure/unirule/result-fields' target='_blank' rel='noopener noreferrer'>List of valid sort fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "unirule_id asc"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/unirule/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "rule_id,statistics,taxonomic_scope,annotation_covered"
+        }, {
+          "name" : "download",
+          "in" : "query",
+          "description" : "Specify <tt>true</tt> to download as file, default is <tt>false</tt>.",
+          "required" : false,
+          "schema" : {
+            "pattern" : "^true$|^false$",
+            "type" : "boolean"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/StreamResult"
+                }
+              },
+              "text/plain;format=tsv" : { },
+              "text/plain;format=list" : { },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { }
+            }
+          }
+        }
+      }
+    },
+    "/unirule/search" : {
+      "get" : {
+        "tags" : [ "UniRule" ],
+        "summary" : "Retrieve UniRule entries by a search query.",
+        "description" : "The search endpoint uses a request query to return all entries associated with the search term in a paginated list of entries. Use ‘size’ to specify the number of entries per page of results. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "search",
+        "parameters" : [ {
+          "name" : "query",
+          "in" : "query",
+          "description" : "Criteria to search UniRule. Advanced queries can be built with parentheses and conditionals such as AND, OR and NOT. <a href='https://rest.uniprot.org/configure/unirule/search-fields' target='_blank' rel='noopener noreferrer'>List of valid search fields</a>",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "Eukaryota"
+        }, {
+          "name" : "sort",
+          "in" : "query",
+          "description" : "Specify field by which to sort results. <a href='https://rest.uniprot.org/configure/unirule/result-fields' target='_blank' rel='noopener noreferrer'>List of valid sort fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "unirule_id asc"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/unirule/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "rule_id,statistics,taxonomic_scope,annotation_covered"
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "Specify the number of entries per page of results (Pagination size). Default is 25, max is 500",
+          "required" : false,
+          "schema" : {
+            "maximum" : 500,
+            "minimum" : 0,
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "example" : 50
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "UniRuleEntry",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SearchResult"
+                }
+              },
+              "text/plain;format=tsv" : { },
+              "text/plain;format=list" : { },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { }
+            }
+          }
+        }
+      }
+    },
+    "/arba/{arbaId}" : {
+      "get" : {
+        "tags" : [ "ARBA" ],
+        "summary" : "Get ARBA entry by a single accession.",
+        "description" : "Search ARBA entry by id to return all data associated with that entry. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "getByArbaId",
+        "parameters" : [ {
+          "name" : "arbaId",
+          "in" : "path",
+          "description" : "Get ARBA entry by an arbaId",
+          "required" : true,
+          "schema" : {
+            "pattern" : "ARBA(\\d{8})",
+            "type" : "string"
+          },
+          "example" : "ARBA00000063"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/arba/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "rule_id,statistics,annotation_covered"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UniRuleEntry"
+                }
+              },
+              "text/plain;format=list" : { }
+            }
+          }
+        }
+      }
+    },
+    "/arba/stream" : {
+      "get" : {
+        "tags" : [ "ARBA" ],
+        "summary" : "Download ARBA entries retrieved by a search query.",
+        "description" : "The stream endpoint uses a request query to return all entries associated with the search term in a single download. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "stream_1",
+        "parameters" : [ {
+          "name" : "query",
+          "in" : "query",
+          "description" : "Criteria to search ARBA. Advanced queries can be built with parentheses and conditionals such as AND, OR and NOT. <a href='https://rest.uniprot.org/configure/arba/search-fields' target='_blank' rel='noopener noreferrer'>List of valid search fields</a>",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "Insulin"
+        }, {
+          "name" : "sort",
+          "in" : "query",
+          "description" : "Specify field by which to sort results. <a href='https://rest.uniprot.org/configure/arba/result-fields' target='_blank' rel='noopener noreferrer'>List of valid sort fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "rule_id asc"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/arba/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "rule_id,statistics,annotation_covered"
+        }, {
+          "name" : "download",
+          "in" : "query",
+          "description" : "Specify <tt>true</tt> to download as file, default is <tt>false</tt>.",
+          "required" : false,
+          "schema" : {
+            "pattern" : "^true$|^false$",
+            "type" : "boolean"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/StreamResult"
+                }
+              },
+              "text/plain;format=tsv" : { },
+              "text/plain;format=list" : { }
+            }
+          }
+        }
+      }
+    },
+    "/arba/search" : {
+      "get" : {
+        "tags" : [ "ARBA" ],
+        "summary" : "Retrieve ARBA entries by a search query.",
+        "description" : "The search endpoint uses a request query to return all entries associated with the search term in a paginated list of entries. Use ‘size’ to specify the number of entries per page of results. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "search_1",
+        "parameters" : [ {
+          "name" : "query",
+          "in" : "query",
+          "description" : "Criteria to search ARBA. Advanced queries can be built with parentheses and conditionals such as AND, OR and NOT. <a href='https://rest.uniprot.org/configure/arba/search-fields' target='_blank' rel='noopener noreferrer'>List of valid search fields</a>",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "Insulin"
+        }, {
+          "name" : "sort",
+          "in" : "query",
+          "description" : "Specify field by which to sort results. <a href='https://rest.uniprot.org/configure/arba/result-fields' target='_blank' rel='noopener noreferrer'>List of valid sort fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "rule_id asc"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/arba/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "rule_id,statistics,annotation_covered"
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "Specify the number of entries per page of results (Pagination size). Default is 25, max is 500",
+          "required" : false,
+          "schema" : {
+            "maximum" : 500,
+            "minimum" : 0,
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "example" : 50
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "UniRuleEntry",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SearchResult"
+                }
+              },
+              "text/plain;format=list" : { }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "Annotation" : {
+        "type" : "object",
+        "properties" : {
+          "gene" : {
+            "$ref" : "#/components/schemas/Gene"
+          },
+          "dbReference" : {
+            "$ref" : "#/components/schemas/UniProtKBCrossReference"
+          },
+          "proteinDescription" : {
+            "$ref" : "#/components/schemas/ProteinDescription"
+          },
+          "keyword" : {
+            "$ref" : "#/components/schemas/Keyword"
+          },
+          "comment" : {
+            "$ref" : "#/components/schemas/Comment"
+          },
+          "annotationType" : {
+            "type" : "string",
+            "enum" : [ "ANNOTATION", "POSITIONAL_FEATURE" ]
+          }
+        }
+      },
+      "CaseRule" : {
+        "type" : "object",
+        "properties" : {
+          "overallStatsExempted" : {
+            "type" : "boolean"
+          },
+          "conditionSets" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ConditionSet"
+            }
+          },
+          "ruleExceptions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/RuleException"
+            }
+          },
+          "annotations" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Annotation"
+            }
+          }
+        }
+      },
+      "Comment" : {
+        "type" : "object",
+        "properties" : {
+          "commentType" : {
+            "type" : "string",
+            "enum" : [ "FUNCTION", "CATALYTIC ACTIVITY", "COFACTOR", "ACTIVITY REGULATION", "BIOPHYSICOCHEMICAL PROPERTIES", "PATHWAY", "SUBUNIT", "INTERACTION", "SUBCELLULAR LOCATION", "ALTERNATIVE PRODUCTS", "TISSUE SPECIFICITY", "DEVELOPMENTAL STAGE", "INDUCTION", "DOMAIN", "PTM", "RNA EDITING", "MASS SPECTROMETRY", "POLYMORPHISM", "DISEASE", "DISRUPTION PHENOTYPE", "ALLERGEN", "TOXIC DOSE", "BIOTECHNOLOGY", "PHARMACEUTICAL", "MISCELLANEOUS", "SIMILARITY", "CAUTION", "SEQUENCE CAUTION", "WEB RESOURCE", "UNKOWN" ]
+          }
+        },
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/AlternativeProductsComment"
+        }, {
+          "$ref" : "#/components/schemas/BPCPComment"
+        }, {
+          "$ref" : "#/components/schemas/CatalyticActivityComment"
+        }, {
+          "$ref" : "#/components/schemas/CofactorComment"
+        }, {
+          "$ref" : "#/components/schemas/DiseaseComment"
+        }, {
+          "$ref" : "#/components/schemas/FreeTextComment"
+        }, {
+          "$ref" : "#/components/schemas/InteractionComment"
+        }, {
+          "$ref" : "#/components/schemas/MassSpectrometryComment"
+        }, {
+          "$ref" : "#/components/schemas/RnaEditingComment"
+        }, {
+          "$ref" : "#/components/schemas/SequenceCautionComment"
+        }, {
+          "$ref" : "#/components/schemas/SubcellularLocationComment"
+        }, {
+          "$ref" : "#/components/schemas/WebResourceComment"
+        } ]
+      },
+      "Condition" : {
+        "type" : "object",
+        "properties" : {
+          "conditionValues" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ConditionValue"
+            }
+          },
+          "range" : {
+            "$ref" : "#/components/schemas/Range"
+          },
+          "type" : {
+            "type" : "string"
+          },
+          "negative" : {
+            "type" : "boolean"
+          },
+          "tag" : {
+            "$ref" : "#/components/schemas/FeatureTagConditionValue"
+          }
+        }
+      },
+      "ConditionSet" : {
+        "type" : "object",
+        "properties" : {
+          "conditions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Condition"
+            }
+          }
+        }
+      },
+      "ConditionValue" : {
+        "type" : "object",
+        "properties" : {
+          "cvId" : {
+            "type" : "string"
+          },
+          "value" : {
+            "type" : "string"
+          }
+        }
+      },
+      "CrossReferenceEvidenceDatabase" : {
+        "type" : "object",
+        "properties" : {
+          "database" : {
+            "$ref" : "#/components/schemas/EvidenceDatabase"
+          },
+          "properties" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Property"
+            }
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "EC" : {
+        "type" : "object",
+        "properties" : {
+          "valid" : {
+            "type" : "boolean"
+          },
+          "value" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "Evidence" : {
+        "type" : "object",
+        "properties" : {
+          "evidenceCode" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "source" : {
+            "type" : "string"
+          }
+        }
+      },
+      "EvidenceDatabase" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "evidenceDatabaseDetail" : {
+            "$ref" : "#/components/schemas/EvidenceDatabaseDetail"
+          },
+          "reference" : {
+            "type" : "boolean"
+          }
+        }
+      },
+      "EvidenceDatabaseDetail" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "displayName" : {
+            "type" : "string"
+          },
+          "category" : {
+            "type" : "string",
+            "enum" : [ "I", "C", "A" ]
+          },
+          "uriLink" : {
+            "type" : "string"
+          }
+        }
+      },
+      "FeatureTagConditionValue" : {
+        "type" : "object",
+        "properties" : {
+          "pattern" : {
+            "type" : "string"
+          },
+          "value" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Fusion" : {
+        "type" : "object",
+        "properties" : {
+          "cters" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "nters" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      },
+      "Gene" : {
+        "type" : "object",
+        "properties" : {
+          "orderedLocusNames" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/OrderedLocusName"
+            }
+          },
+          "geneName" : {
+            "$ref" : "#/components/schemas/GeneName"
+          },
+          "synonyms" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/GeneNameSynonym"
+            }
+          },
+          "orfNames" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ORFName"
+            }
+          }
+        }
+      },
+      "GeneName" : {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "GeneNameSynonym" : {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "Information" : {
+        "type" : "object",
+        "properties" : {
+          "duplicates" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "oldRuleNum" : {
+            "type" : "string"
+          },
+          "uniProtIds" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "dataClass" : {
+            "type" : "string",
+            "enum" : [ "Protein", "Domain" ]
+          },
+          "fusion" : {
+            "$ref" : "#/components/schemas/Fusion"
+          },
+          "plasmaIds" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "names" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "related" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "uniProtAccessions" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "comment" : {
+            "type" : "string"
+          },
+          "version" : {
+            "type" : "string"
+          },
+          "internal" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Keyword" : {
+        "type" : "object",
+        "properties" : {
+          "category" : {
+            "type" : "string",
+            "enum" : [ "Biological process", "Cellular component", "Coding sequence diversity", "Developmental stage", "Disease", "Domain", "Ligand", "Molecular function", "PTM", "Technical term", "Unknown" ]
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "Ligand" : {
+        "type" : "object",
+        "properties" : {
+          "note" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "label" : {
+            "type" : "string"
+          }
+        }
+      },
+      "LigandPart" : {
+        "type" : "object",
+        "properties" : {
+          "note" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "label" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Name" : {
+        "type" : "object",
+        "properties" : {
+          "valid" : {
+            "type" : "boolean"
+          },
+          "value" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "ORFName" : {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "OrderedLocusName" : {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "Position" : {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "modifier" : {
+            "type" : "string",
+            "enum" : [ "EXACT", "OUTSIDE", "UNKNOWN", "UNSURE" ]
+          }
+        }
+      },
+      "PositionFeatureSet" : {
+        "type" : "object",
+        "properties" : {
+          "positionalFeatures" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/PositionalFeature"
+            }
+          },
+          "uniProtKBAccession" : {
+            "type" : "string"
+          },
+          "alignmentSignature" : {
+            "type" : "string"
+          },
+          "ruleExceptions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/RuleException"
+            }
+          },
+          "conditions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Condition"
+            }
+          },
+          "annotations" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Annotation"
+            }
+          },
+          "tag" : {
+            "type" : "string"
+          }
+        }
+      },
+      "PositionalFeature" : {
+        "type" : "object",
+        "properties" : {
+          "inGroup" : {
+            "type" : "boolean"
+          },
+          "ligand" : {
+            "$ref" : "#/components/schemas/Ligand"
+          },
+          "ligandPart" : {
+            "$ref" : "#/components/schemas/LigandPart"
+          },
+          "pattern" : {
+            "type" : "string"
+          },
+          "type" : {
+            "type" : "string"
+          },
+          "position" : {
+            "$ref" : "#/components/schemas/Range"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "annotationType" : {
+            "type" : "string",
+            "enum" : [ "ANNOTATION", "POSITIONAL_FEATURE" ]
+          }
+        }
+      },
+      "Property" : {
+        "type" : "object",
+        "properties" : {
+          "key" : {
+            "type" : "string"
+          },
+          "value" : {
+            "type" : "string"
+          }
+        }
+      },
+      "ProteinDescription" : {
+        "type" : "object",
+        "properties" : {
+          "alternativeNames" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ProteinName"
+            }
+          },
+          "recommendedName" : {
+            "$ref" : "#/components/schemas/ProteinName"
+          },
+          "allergenName" : {
+            "$ref" : "#/components/schemas/Name"
+          },
+          "biotechName" : {
+            "$ref" : "#/components/schemas/Name"
+          },
+          "cdAntigenNames" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Name"
+            }
+          },
+          "innNames" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Name"
+            }
+          },
+          "submissionNames" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ProteinSubName"
+            }
+          },
+          "includes" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ProteinSection"
+            }
+          },
+          "contains" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ProteinSection"
+            }
+          },
+          "flag" : {
+            "type" : "string"
+          }
+        }
+      },
+      "ProteinName" : {
+        "type" : "object",
+        "properties" : {
+          "shortNames" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Name"
+            }
+          },
+          "ecNumbers" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EC"
+            }
+          },
+          "valid" : {
+            "type" : "boolean"
+          },
+          "fullName" : {
+            "$ref" : "#/components/schemas/Name"
+          }
+        }
+      },
+      "ProteinSection" : {
+        "type" : "object",
+        "properties" : {
+          "alternativeNames" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ProteinName"
+            }
+          },
+          "recommendedName" : {
+            "$ref" : "#/components/schemas/ProteinName"
+          },
+          "allergenName" : {
+            "$ref" : "#/components/schemas/Name"
+          },
+          "biotechName" : {
+            "$ref" : "#/components/schemas/Name"
+          },
+          "cdAntigenNames" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Name"
+            }
+          },
+          "innNames" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Name"
+            }
+          }
+        }
+      },
+      "ProteinSubName" : {
+        "type" : "object",
+        "properties" : {
+          "ecNumbers" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EC"
+            }
+          },
+          "valid" : {
+            "type" : "boolean"
+          },
+          "fullName" : {
+            "$ref" : "#/components/schemas/Name"
+          }
+        }
+      },
+      "Range" : {
+        "type" : "object",
+        "properties" : {
+          "start" : {
+            "$ref" : "#/components/schemas/Position"
+          },
+          "end" : {
+            "$ref" : "#/components/schemas/Position"
+          }
+        }
+      },
+      "Rule" : {
+        "type" : "object",
+        "properties" : {
+          "conditionSets" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ConditionSet"
+            }
+          },
+          "ruleExceptions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/RuleException"
+            }
+          },
+          "annotations" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Annotation"
+            }
+          }
+        }
+      },
+      "RuleException" : {
+        "type" : "object",
+        "properties" : {
+          "category" : {
+            "type" : "string"
+          },
+          "accessions" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "note" : {
+            "type" : "string"
+          },
+          "annotation" : {
+            "$ref" : "#/components/schemas/RuleExceptionAnnotation"
+          }
+        }
+      },
+      "RuleExceptionAnnotation" : {
+        "type" : "object",
+        "properties" : {
+          "annotationType" : {
+            "type" : "string",
+            "enum" : [ "ANNOTATION", "POSITIONAL_FEATURE" ]
+          }
+        }
+      },
+      "SamFeatureSet" : {
+        "type" : "object",
+        "properties" : {
+          "samTrigger" : {
+            "$ref" : "#/components/schemas/SamTrigger"
+          },
+          "conditions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Condition"
+            }
+          },
+          "annotations" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Annotation"
+            }
+          }
+        }
+      },
+      "SamTrigger" : {
+        "type" : "object",
+        "properties" : {
+          "samTriggerType" : {
+            "type" : "string",
+            "enum" : [ "transmembrane", "signal", "coiledCoil" ]
+          },
+          "expectedHits" : {
+            "$ref" : "#/components/schemas/Range"
+          }
+        }
+      },
+      "Statistics" : {
+        "type" : "object",
+        "properties" : {
+          "reviewedProteinCount" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "unreviewedProteinCount" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "UniProtDatabaseAttribute" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "xmlTag" : {
+            "type" : "string"
+          },
+          "uriLink" : {
+            "type" : "string"
+          }
+        }
+      },
+      "UniProtDatabaseDetail" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "displayName" : {
+            "type" : "string"
+          },
+          "category" : {
+            "type" : "string",
+            "enum" : [ "Sequence databases", "3D structure databases", "Protein-protein interaction databases", "Chemistry", "Protein family/group databases", "PTM databases", "Genetic variation databases", "2D gel databases", "Proteomic databases", "Protocols and materials databases", "Genome annotation databases", "Organism-specific databases", "Phylogenomic databases", "Enzyme and pathway databases", "Miscellaneous", "Gene expression databases", "Family and domain databases", "Ontologies", "Proteomes databases", "Unknown" ]
+          },
+          "uniProtDataTypes" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "uriLink" : {
+            "type" : "string"
+          },
+          "attributes" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/UniProtDatabaseAttribute"
+            }
+          },
+          "implicit" : {
+            "type" : "boolean"
+          },
+          "linkedReason" : {
+            "type" : "string"
+          },
+          "idMappingName" : {
+            "type" : "string"
+          },
+          "type" : {
+            "type" : "string"
+          }
+        }
+      },
+      "UniProtKBCrossReference" : {
+        "type" : "object",
+        "properties" : {
+          "isoformId" : {
+            "type" : "string"
+          },
+          "database" : {
+            "type" : "string"
+          },
+          "properties" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Property"
+            }
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "UniRuleEntry" : {
+        "type" : "object",
+        "properties" : {
+          "statistics" : {
+            "$ref" : "#/components/schemas/Statistics"
+          },
+          "uniRuleId" : {
+            "type" : "string"
+          },
+          "mainRule" : {
+            "$ref" : "#/components/schemas/Rule"
+          },
+          "otherRules" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CaseRule"
+            }
+          },
+          "information" : {
+            "$ref" : "#/components/schemas/Information"
+          },
+          "positionFeatureSets" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/PositionFeatureSet"
+            }
+          },
+          "samFeatureSets" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/SamFeatureSet"
+            }
+          },
+          "createdDate" : {
+            "type" : "string",
+            "format" : "date"
+          },
+          "modifiedDate" : {
+            "type" : "string",
+            "format" : "date"
+          }
+        }
+      },
+      "StreamResult" : {
+        "type" : "object",
+        "properties" : {
+          "results" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/UniRuleEntry"
+            }
+          },
+          "error" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Facet" : {
+        "type" : "object",
+        "properties" : {
+          "label" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "allowMultipleSelection" : {
+            "type" : "boolean"
+          },
+          "values" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/FacetItem"
+            }
+          }
+        }
+      },
+      "FacetItem" : {
+        "type" : "object",
+        "properties" : {
+          "label" : {
+            "type" : "string"
+          },
+          "value" : {
+            "type" : "string"
+          },
+          "count" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "ProblemPair" : {
+        "type" : "object",
+        "properties" : {
+          "code" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "message" : {
+            "type" : "string"
+          }
+        }
+      },
+      "SearchResult" : {
+        "type" : "object",
+        "properties" : {
+          "results" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/UniRuleEntry"
+            }
+          },
+          "facets" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Facet"
+            }
+          },
+          "matchedFields" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TermInfo"
+            }
+          },
+          "suggestions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Suggestion"
+            }
+          },
+          "warnings" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ProblemPair"
+            }
+          }
+        }
+      },
+      "Suggestion" : {
+        "type" : "object",
+        "properties" : {
+          "query" : {
+            "type" : "string"
+          },
+          "hits" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "TermInfo" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "hits" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "AlternativeProductsComment" : {
+        "type" : "object",
+        "properties" : {
+          "events" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string",
+              "enum" : [ "Alternative promoter usage", "Alternative splicing", "Alternative initiation", "Ribosomal frameshifting" ]
+            }
+          },
+          "isoforms" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/APIsoform"
+            }
+          },
+          "note" : {
+            "$ref" : "#/components/schemas/Note"
+          }
+        }
+      },
+      "MichaelisConstant" : {
+        "type" : "object",
+        "properties" : {
+          "unit" : {
+            "type" : "string",
+            "enum" : [ "M", "mM", "uM", "nM", "mg/mL", "mg/ml" ]
+          },
+          "substrate" : {
+            "type" : "string"
+          },
+          "constant" : {
+            "type" : "number",
+            "format" : "double"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "PhDependence" : {
+        "type" : "object",
+        "properties" : {
+          "texts" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EvidencedValue"
+            }
+          }
+        }
+      },
+      "SequenceCautionComment" : {
+        "type" : "object",
+        "properties" : {
+          "sequenceCautionType" : {
+            "type" : "string",
+            "enum" : [ "Frameshift", "Erroneous initiation", "Erroneous termination", "Erroneous gene model prediction", "Erroneous translation", "Miscellaneous discrepancy", "unknown" ]
+          },
+          "note" : {
+            "type" : "string"
+          },
+          "sequence" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          },
+          "molecule" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Disease" : {
+        "type" : "object",
+        "properties" : {
+          "diseaseAccession" : {
+            "type" : "string"
+          },
+          "diseaseCrossReference" : {
+            "$ref" : "#/components/schemas/CrossReferenceDiseaseDatabase"
+          },
+          "diseaseId" : {
+            "type" : "string"
+          },
+          "acronym" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "Interactant" : {
+        "type" : "object",
+        "properties" : {
+          "geneName" : {
+            "type" : "string"
+          },
+          "uniProtKBAccession" : {
+            "type" : "string"
+          },
+          "chainId" : {
+            "type" : "string"
+          },
+          "intActId" : {
+            "type" : "string"
+          }
+        }
+      },
+      "MaximumVelocity" : {
+        "type" : "object",
+        "properties" : {
+          "unit" : {
+            "type" : "string"
+          },
+          "velocity" : {
+            "type" : "number",
+            "format" : "double"
+          },
+          "enzyme" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "RedoxPotential" : {
+        "type" : "object",
+        "properties" : {
+          "texts" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EvidencedValue"
+            }
+          }
+        }
+      },
+      "IsoformName" : {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "Cofactor" : {
+        "type" : "object",
+        "properties" : {
+          "cofactorCrossReference" : {
+            "$ref" : "#/components/schemas/CrossReferenceCofactorDatabase"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "SubcellularLocationValue" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "value" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "FreeTextComment" : {
+        "type" : "object",
+        "properties" : {
+          "texts" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EvidencedValue"
+            }
+          },
+          "molecule" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Absorption" : {
+        "type" : "object",
+        "properties" : {
+          "note" : {
+            "$ref" : "#/components/schemas/Note"
+          },
+          "approximate" : {
+            "type" : "boolean"
+          },
+          "max" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "CatalyticActivityComment" : {
+        "type" : "object",
+        "properties" : {
+          "reaction" : {
+            "$ref" : "#/components/schemas/Reaction"
+          },
+          "physiologicalReactions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/PhysiologicalReaction"
+            }
+          },
+          "molecule" : {
+            "type" : "string"
+          }
+        }
+      },
+      "TemperatureDependence" : {
+        "type" : "object",
+        "properties" : {
+          "texts" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EvidencedValue"
+            }
+          }
+        }
+      },
+      "DiseaseComment" : {
+        "type" : "object",
+        "properties" : {
+          "disease" : {
+            "$ref" : "#/components/schemas/Disease"
+          },
+          "note" : {
+            "$ref" : "#/components/schemas/Note"
+          },
+          "molecule" : {
+            "type" : "string"
+          }
+        }
+      },
+      "CrossReferenceReactionDatabase" : {
+        "type" : "object",
+        "properties" : {
+          "database" : {
+            "type" : "string",
+            "enum" : [ "ChEBI", "Rhea" ]
+          },
+          "properties" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Property"
+            }
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "PhysiologicalReaction" : {
+        "type" : "object",
+        "properties" : {
+          "reactionCrossReference" : {
+            "$ref" : "#/components/schemas/CrossReferenceReactionDatabase"
+          },
+          "directionType" : {
+            "type" : "string",
+            "enum" : [ "left-to-right", "right-to-left" ]
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "EvidencedValue" : {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "WebResourceComment" : {
+        "type" : "object",
+        "properties" : {
+          "resourceUrl" : {
+            "type" : "string"
+          },
+          "ftp" : {
+            "type" : "boolean"
+          },
+          "note" : {
+            "type" : "string"
+          },
+          "resourceName" : {
+            "type" : "string"
+          },
+          "molecule" : {
+            "type" : "string"
+          }
+        }
+      },
+      "CofactorComment" : {
+        "type" : "object",
+        "properties" : {
+          "cofactors" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Cofactor"
+            }
+          },
+          "note" : {
+            "$ref" : "#/components/schemas/Note"
+          },
+          "valid" : {
+            "type" : "boolean"
+          },
+          "molecule" : {
+            "type" : "string"
+          }
+        }
+      },
+      "RnaEditingComment" : {
+        "type" : "object",
+        "properties" : {
+          "locationType" : {
+            "type" : "string",
+            "enum" : [ "Not_applicable", "Undetermined", "Unknown", "Known" ]
+          },
+          "positions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/RnaEdPosition"
+            }
+          },
+          "note" : {
+            "$ref" : "#/components/schemas/Note"
+          },
+          "molecule" : {
+            "type" : "string"
+          }
+        }
+      },
+      "InteractionComment" : {
+        "type" : "object",
+        "properties" : {
+          "interactions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Interaction"
+            }
+          }
+        }
+      },
+      "RnaEdPosition" : {
+        "type" : "object",
+        "properties" : {
+          "position" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "Interaction" : {
+        "type" : "object",
+        "properties" : {
+          "organismDiffer" : {
+            "type" : "boolean"
+          },
+          "interactantOne" : {
+            "$ref" : "#/components/schemas/Interactant"
+          },
+          "interactantTwo" : {
+            "$ref" : "#/components/schemas/Interactant"
+          },
+          "numberOfExperiments" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }
+      },
+      "CrossReferenceCofactorDatabase" : {
+        "type" : "object",
+        "properties" : {
+          "database" : {
+            "type" : "string",
+            "enum" : [ "ChEBI", "" ]
+          },
+          "properties" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Property"
+            }
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "BPCPComment" : {
+        "type" : "object",
+        "properties" : {
+          "kineticParameters" : {
+            "$ref" : "#/components/schemas/KineticParameters"
+          },
+          "temperatureDependence" : {
+            "$ref" : "#/components/schemas/TemperatureDependence"
+          },
+          "absorption" : {
+            "$ref" : "#/components/schemas/Absorption"
+          },
+          "phDependence" : {
+            "$ref" : "#/components/schemas/PhDependence"
+          },
+          "redoxPotential" : {
+            "$ref" : "#/components/schemas/RedoxPotential"
+          },
+          "molecule" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Reaction" : {
+        "type" : "object",
+        "properties" : {
+          "reactionCrossReferences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CrossReferenceReactionDatabase"
+            }
+          },
+          "ecNumber" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "SubcellularLocationComment" : {
+        "type" : "object",
+        "properties" : {
+          "subcellularLocations" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/SubcellularLocation"
+            }
+          },
+          "note" : {
+            "$ref" : "#/components/schemas/Note"
+          },
+          "molecule" : {
+            "type" : "string"
+          }
+        }
+      },
+      "APIsoform" : {
+        "type" : "object",
+        "properties" : {
+          "synonyms" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/IsoformName"
+            }
+          },
+          "note" : {
+            "$ref" : "#/components/schemas/Note"
+          },
+          "sequenceIds" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "isoformIds" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "isoformSequenceStatus" : {
+            "type" : "string",
+            "enum" : [ "Displayed", "External", "Not described", "Described" ]
+          },
+          "name" : {
+            "$ref" : "#/components/schemas/IsoformName"
+          }
+        }
+      },
+      "KineticParameters" : {
+        "type" : "object",
+        "properties" : {
+          "note" : {
+            "$ref" : "#/components/schemas/Note"
+          },
+          "maximumVelocities" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/MaximumVelocity"
+            }
+          },
+          "michaelisConstants" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/MichaelisConstant"
+            }
+          }
+        }
+      },
+      "Note" : {
+        "type" : "object",
+        "properties" : {
+          "valid" : {
+            "type" : "boolean"
+          },
+          "texts" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EvidencedValue"
+            }
+          }
+        }
+      },
+      "CrossReferenceDiseaseDatabase" : {
+        "type" : "object",
+        "properties" : {
+          "database" : {
+            "type" : "string",
+            "enum" : [ "MIM", "" ]
+          },
+          "properties" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Property"
+            }
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "MassSpectrometryComment" : {
+        "type" : "object",
+        "properties" : {
+          "molWeight" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "molWeightError" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          },
+          "note" : {
+            "type" : "string"
+          },
+          "method" : {
+            "type" : "string",
+            "enum" : [ "Electrospray", "FAB", "LSI", "MALDI", "Plasma desorption", "SELDI", "API", "Unknown" ]
+          },
+          "molecule" : {
+            "type" : "string"
+          }
+        }
+      },
+      "SubcellularLocation" : {
+        "type" : "object",
+        "properties" : {
+          "topology" : {
+            "$ref" : "#/components/schemas/SubcellularLocationValue"
+          },
+          "orientation" : {
+            "$ref" : "#/components/schemas/SubcellularLocationValue"
+          },
+          "location" : {
+            "$ref" : "#/components/schemas/SubcellularLocationValue"
+          }
+        }
+      }
+    }
+  }
+}

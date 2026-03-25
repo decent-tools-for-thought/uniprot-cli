@@ -1,0 +1,1263 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "OpenAPI definition",
+    "version" : "v0"
+  },
+  "servers" : [ {
+    "url" : "https://rest.uniprot.org/",
+    "description" : "UniProt REST API Server"
+  } ],
+  "tags" : [ {
+    "name" : "UniParc",
+    "description" : "UniParc is a comprehensive and non-redundant database that contains most of the publicly available protein sequences in the world. Proteins may exist in different source databases and in multiple copies in the same database. UniParc avoids such redundancy by storing each unique sequence only once and giving it a stable and unique identifier (UPI)."
+  } ],
+  "paths" : {
+    "/uniparc/{upi}" : {
+      "get" : {
+        "tags" : [ "UniParc" ],
+        "summary" : "Get UniParc entry by a single upi.",
+        "description" : "Search UniParc entry by id(upi) to return all data associated with that entry. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "getByUpId",
+        "parameters" : [ {
+          "name" : "upi",
+          "in" : "query",
+          "description" : "Unique identifier for the UniParc id (UPI)",
+          "required" : true,
+          "schema" : {
+            "pattern" : "UPI[\\w]{10}",
+            "type" : "string"
+          },
+          "example" : "UPI000002DB1C"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/uniparc/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "upi,organism,length"
+        }, {
+          "name" : "dbTypes",
+          "in" : "query",
+          "description" : "Comma separated list of UniParc cross reference database names. (Max. 50)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "EnsemblBacteria,FlyBase"
+        }, {
+          "name" : "active",
+          "in" : "query",
+          "description" : "Flag to filter by active(true) or inactive(false) cross reference",
+          "required" : false,
+          "schema" : {
+            "type" : "boolean"
+          }
+        }, {
+          "name" : "taxonIds",
+          "in" : "query",
+          "description" : "Comma separated list of taxon ids. (Max. 100)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "9606,10116,9913"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UniParcEntry"
+                }
+              },
+              "application/xml" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Entry"
+                }
+              },
+              "application/rdf+xml" : { },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { },
+              "text/plain;format=tsv" : { },
+              "text/plain;format=fasta" : { }
+            }
+          }
+        }
+      }
+    },
+    "/uniparc/{upi}/light" : {
+      "get" : {
+        "tags" : [ "UniParc" ],
+        "summary" : "Get UniParc light entry by a single upi.",
+        "description" : "Search UniParc entry by id(upi) to return all data associated with that entry. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "getEntryLightByUpId",
+        "parameters" : [ {
+          "name" : "upi",
+          "in" : "path",
+          "description" : "Unique identifier for the UniParc id (UPI)",
+          "required" : true,
+          "schema" : {
+            "pattern" : "UPI[\\w]{10}",
+            "type" : "string"
+          },
+          "example" : "UPI000002DB1C"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/uniparc/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "upi,organism,length"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UniParcEntryLight"
+                }
+              },
+              "application/xml" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Entry"
+                }
+              },
+              "application/rdf+xml" : { },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { },
+              "text/plain;format=tsv" : { },
+              "text/plain;format=fasta" : { }
+            }
+          }
+        }
+      }
+    },
+    "/uniparc/{upi}/databases" : {
+      "get" : {
+        "tags" : [ "UniParc" ],
+        "summary" : "Retrieve UniParc database cross-reference entries by a upi.",
+        "description" : "Get a page of database cross-reference entries by a upi",
+        "operationId" : "getDatabasesByUpi",
+        "parameters" : [ {
+          "name" : "upi",
+          "in" : "path",
+          "description" : "Unique identifier for the UniParc id (UPI)",
+          "required" : true,
+          "schema" : {
+            "pattern" : "UPI[\\w]{10}",
+            "type" : "string"
+          },
+          "example" : "UPI000002DB1C"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/uniparc/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "upi,organism,length"
+        }, {
+          "name" : "id",
+          "in" : "query",
+          "description" : "id of the database",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "Q0GNZ6"
+        }, {
+          "name" : "dbTypes",
+          "in" : "query",
+          "description" : "Comma separated list of UniParc cross reference database names. (Max. 50)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "EnsemblBacteria,FlyBase"
+        }, {
+          "name" : "active",
+          "in" : "query",
+          "description" : "Flag to filter by active(true) or inactive(false) cross reference",
+          "required" : false,
+          "schema" : {
+            "type" : "boolean"
+          }
+        }, {
+          "name" : "taxonIds",
+          "in" : "query",
+          "description" : "Comma separated list of taxon ids. (Max. 100)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "9606,10116,9913"
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "Specify the number of entries per page of results (Pagination size). Default is 25, max is 500",
+          "required" : false,
+          "schema" : {
+            "maximum" : 500,
+            "minimum" : 0,
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "example" : 50
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UniParcCrossReference"
+                }
+              },
+              "text/plain;format=tsv" : { },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { }
+            }
+          }
+        }
+      }
+    },
+    "/uniparc/{upi}/databases/stream" : {
+      "get" : {
+        "tags" : [ "UniParc" ],
+        "summary" : "Download all UniParc database cross-reference entries by a upi.",
+        "description" : "Download all database cross-reference entries by a upi",
+        "operationId" : "streamDatabasesByUpi",
+        "parameters" : [ {
+          "name" : "upi",
+          "in" : "path",
+          "description" : "Unique identifier for the UniParc id (UPI)",
+          "required" : true,
+          "schema" : {
+            "pattern" : "UPI[\\w]{10}",
+            "type" : "string"
+          },
+          "example" : "UPI000002DB1C"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/uniparc/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "upi,organism,length"
+        }, {
+          "name" : "id",
+          "in" : "query",
+          "description" : "id of the database",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "Q0GNZ6"
+        }, {
+          "name" : "dbTypes",
+          "in" : "query",
+          "description" : "Comma separated list of UniParc cross reference database names. (Max. 50)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "EnsemblBacteria,FlyBase"
+        }, {
+          "name" : "active",
+          "in" : "query",
+          "description" : "Flag to filter by active(true) or inactive(false) cross reference",
+          "required" : false,
+          "schema" : {
+            "type" : "boolean"
+          }
+        }, {
+          "name" : "taxonIds",
+          "in" : "query",
+          "description" : "Comma separated list of taxon ids. (Max. 100)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "9606,10116,9913"
+        }, {
+          "name" : "download",
+          "in" : "query",
+          "description" : "Specify <tt>true</tt> to download as file, default is <tt>false</tt>.",
+          "required" : false,
+          "schema" : {
+            "pattern" : "^true$|^false$",
+            "type" : "boolean"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UniParcCrossReference"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/uniparc/stream" : {
+      "get" : {
+        "tags" : [ "UniParc" ],
+        "summary" : "Download UniParc entries retrieved by a search query.",
+        "description" : "The stream endpoint uses a request query to return all entries associated with the search term in a single download. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you The stream endpoint has a maximum limit of 10 million entries. For larger requests, please use the 'UniParc asynchronous download job' requests described below. The 'UniParc asynchronous download job' requests can be used for any size -- the asynchronous download jobs can be paused and resumed at your convenience, unlike the stream endpoint.",
+        "operationId" : "stream",
+        "parameters" : [ {
+          "name" : "query",
+          "in" : "query",
+          "description" : "Criteria to search UniParc. Advanced queries can be built with parentheses and conditionals such as AND, OR and NOT. <a href='https://rest.uniprot.org/configure/uniparc/search-fields' target='_blank' rel='noopener noreferrer'>List of valid search fields</a>",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "Homo Sapiens"
+        }, {
+          "name" : "sort",
+          "in" : "query",
+          "description" : "Specify field by which to sort results. <a href='https://rest.uniprot.org/configure/uniparc/result-fields' target='_blank' rel='noopener noreferrer'>List of valid sort fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "upi asc"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/uniparc/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "upi,organism,length"
+        }, {
+          "name" : "download",
+          "in" : "query",
+          "description" : "Specify <tt>true</tt> to download as file, default is <tt>false</tt>.",
+          "required" : false,
+          "schema" : {
+            "pattern" : "^true$|^false$",
+            "type" : "boolean"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/StreamResult"
+                }
+              },
+              "application/xml" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/Entry"
+                  }
+                }
+              },
+              "text/plain;format=tsv" : { },
+              "text/plain;format=list" : { },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { },
+              "text/plain;format=fasta" : { }
+            }
+          }
+        }
+      }
+    },
+    "/uniparc/search" : {
+      "get" : {
+        "tags" : [ "UniParc" ],
+        "summary" : "Retrieve UniParc entries by a search query.",
+        "description" : "The search endpoint uses a request query to return all entries associated with the search term in a paginated list of entries. Use ‘size’ to specify the number of entries per page of results. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "search",
+        "parameters" : [ {
+          "name" : "query",
+          "in" : "query",
+          "description" : "Criteria to search UniParc. Advanced queries can be built with parentheses and conditionals such as AND, OR and NOT. <a href='https://rest.uniprot.org/configure/uniparc/search-fields' target='_blank' rel='noopener noreferrer'>List of valid search fields</a>",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "Homo Sapiens"
+        }, {
+          "name" : "sort",
+          "in" : "query",
+          "description" : "Specify field by which to sort results. <a href='https://rest.uniprot.org/configure/uniparc/result-fields' target='_blank' rel='noopener noreferrer'>List of valid sort fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "upi asc"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/uniparc/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "upi,organism,length"
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "Specify the number of entries per page of results (Pagination size). Default is 25, max is 500",
+          "required" : false,
+          "schema" : {
+            "maximum" : 500,
+            "minimum" : 0,
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "example" : 50
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "UniParcEntry",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SearchResult"
+                }
+              },
+              "application/xml" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/Entry"
+                  }
+                }
+              },
+              "text/plain;format=tsv" : { },
+              "text/plain;format=list" : { },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { },
+              "text/plain;format=fasta" : { }
+            }
+          }
+        }
+      }
+    },
+    "/uniparc/proteome/{upId}" : {
+      "get" : {
+        "tags" : [ "UniParc" ],
+        "summary" : "Get UniParc fasta by Proteome UPID",
+        "operationId" : "getFastaByProteomeId",
+        "parameters" : [ {
+          "name" : "upId",
+          "in" : "query",
+          "description" : "Unique identifier for the proteome entry",
+          "required" : true,
+          "schema" : {
+            "pattern" : "UP[0-9]{9}",
+            "type" : "string"
+          },
+          "example" : "UP000005640"
+        }, {
+          "name" : "dbTypes",
+          "in" : "query",
+          "description" : "Comma separated list of UniParc cross reference database names. (Max. 50)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "EnsemblBacteria,FlyBase"
+        }, {
+          "name" : "active",
+          "in" : "query",
+          "description" : "Flag to filter by active(true) or inactive(false) cross reference",
+          "required" : false,
+          "schema" : {
+            "type" : "boolean"
+          }
+        }, {
+          "name" : "taxonIds",
+          "in" : "query",
+          "description" : "Comma separated list of taxon ids. (Max. 100)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "9606,10116,9913"
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "Specify the number of entries per page of results (Pagination size). Default is 25, max is 500",
+          "required" : false,
+          "schema" : {
+            "maximum" : 500,
+            "minimum" : 0,
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "example" : 50
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "text/plain;format=fasta" : { }
+            }
+          }
+        }
+      }
+    },
+    "/uniparc/proteome/{upId}/stream" : {
+      "get" : {
+        "tags" : [ "UniParc" ],
+        "summary" : "Download UniParc entries by Proteome UPID",
+        "operationId" : "streamByProteomeId",
+        "parameters" : [ {
+          "name" : "upId",
+          "in" : "query",
+          "description" : "Unique identifier for the proteome entry",
+          "required" : true,
+          "schema" : {
+            "pattern" : "UP[0-9]{9}",
+            "type" : "string"
+          },
+          "example" : "UP000005640"
+        }, {
+          "name" : "dbTypes",
+          "in" : "query",
+          "description" : "Comma separated list of UniParc cross reference database names. (Max. 50)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "EnsemblBacteria,FlyBase"
+        }, {
+          "name" : "active",
+          "in" : "query",
+          "description" : "Flag to filter by active(true) or inactive(false) cross reference",
+          "required" : false,
+          "schema" : {
+            "type" : "boolean"
+          }
+        }, {
+          "name" : "taxonIds",
+          "in" : "query",
+          "description" : "Comma separated list of taxon ids. (Max. 100)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "9606,10116,9913"
+        }, {
+          "name" : "download",
+          "in" : "query",
+          "description" : "Specify <tt>true</tt> to download as file, default is <tt>false</tt>.",
+          "required" : false,
+          "schema" : {
+            "pattern" : "^true$|^false$",
+            "type" : "boolean"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "text/plain;format=fasta" : { }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "CrossReferenceEvidenceDatabase" : {
+        "type" : "object",
+        "properties" : {
+          "database" : {
+            "$ref" : "#/components/schemas/EvidenceDatabase"
+          },
+          "properties" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Property"
+            }
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Evidence" : {
+        "type" : "object",
+        "properties" : {
+          "evidenceCode" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "source" : {
+            "type" : "string"
+          }
+        }
+      },
+      "EvidenceDatabase" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "evidenceDatabaseDetail" : {
+            "$ref" : "#/components/schemas/EvidenceDatabaseDetail"
+          },
+          "reference" : {
+            "type" : "boolean"
+          }
+        }
+      },
+      "EvidenceDatabaseDetail" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "displayName" : {
+            "type" : "string"
+          },
+          "category" : {
+            "type" : "string",
+            "enum" : [ "I", "C", "A" ]
+          },
+          "uriLink" : {
+            "type" : "string"
+          }
+        }
+      },
+      "InterProGroup" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Organism" : {
+        "type" : "object",
+        "properties" : {
+          "lineages" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "taxonId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "synonyms" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "commonName" : {
+            "type" : "string"
+          },
+          "scientificName" : {
+            "type" : "string"
+          },
+          "evidences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Evidence"
+            }
+          }
+        }
+      },
+      "Property" : {
+        "type" : "object",
+        "properties" : {
+          "key" : {
+            "type" : "string"
+          },
+          "value" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Sequence" : {
+        "type" : "object",
+        "properties" : {
+          "content" : {
+            "type" : "string"
+          },
+          "length" : {
+            "type" : "integer",
+            "format" : "int32",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "checksum" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          }
+        },
+        "xml" : {
+          "name" : "sequence",
+          "namespace" : "http://uniprot.org/uniparc"
+        }
+      },
+      "SequenceFeature" : {
+        "type" : "object",
+        "properties" : {
+          "signatureDbType" : {
+            "type" : "string",
+            "enum" : [ "CDD", "Gene3D", "HAMAP", "PANTHER", "Pfam", "PIRSF", "PRINTS", "PROSITE", "SFLD", "SMART", "SUPFAM", "NCBIfam", "FunFam", "PIRSR" ]
+          },
+          "interProDomain" : {
+            "$ref" : "#/components/schemas/InterProGroup"
+          },
+          "signatureDbId" : {
+            "type" : "string"
+          },
+          "locations" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/SequenceFeatureLocation"
+            }
+          }
+        }
+      },
+      "SequenceFeatureLocation" : {
+        "type" : "object",
+        "properties" : {
+          "alignment" : {
+            "type" : "string"
+          },
+          "end" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "start" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }
+      },
+      "UniParcCrossReference" : {
+        "type" : "object",
+        "properties" : {
+          "proteomeId" : {
+            "type" : "string"
+          },
+          "proteinName" : {
+            "type" : "string"
+          },
+          "geneName" : {
+            "type" : "string"
+          },
+          "versionI" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "created" : {
+            "type" : "string",
+            "format" : "date"
+          },
+          "lastUpdated" : {
+            "type" : "string",
+            "format" : "date"
+          },
+          "chain" : {
+            "type" : "string"
+          },
+          "ncbiGi" : {
+            "type" : "string"
+          },
+          "component" : {
+            "type" : "string"
+          },
+          "organism" : {
+            "$ref" : "#/components/schemas/Organism"
+          },
+          "active" : {
+            "type" : "boolean"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "database" : {
+            "type" : "string",
+            "enum" : [ "EnsemblBacteria", "EnsemblFungi", "EnsemblMetazoa", "EnsemblPlants", "EnsemblProtists", "EMBL", "EMBL_CON", "EMBL_TPA", "EMBL_TSA", "EMBLWGS", "Ensembl", "EnsemblRapid", "EPO", "FlyBase", "FusionGDB", "H-InvDB", "IPI", "JPO", "KIPO", "PATRIC", "PDB", "PIR", "PIRARC", "PRF", "RefSeq", "REMTREMBL", "SEED", "SGD", "UniProtKB/Swiss-Prot", "UniProtKB/Swiss-Prot protein isoforms", "TAIR", "UniProtKB/TrEMBL", "TREMBLNEW", "TREMBL_VARSPLIC", "TROME", "UNIMES", "USPTO", "VectorBase", "VEGA", "WBParaSite", "WormBase" ]
+          },
+          "properties" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Property"
+            }
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "UniParcEntry" : {
+        "type" : "object",
+        "properties" : {
+          "uniParcCrossReferences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/UniParcCrossReference"
+            }
+          },
+          "uniProtExclusionReason" : {
+            "type" : "string"
+          },
+          "oldestCrossRefCreated" : {
+            "type" : "string",
+            "format" : "date"
+          },
+          "mostRecentCrossRefUpdated" : {
+            "type" : "string",
+            "format" : "date"
+          },
+          "uniParcId" : {
+            "type" : "string"
+          },
+          "sequenceFeatures" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/SequenceFeature"
+            }
+          },
+          "sequence" : {
+            "$ref" : "#/components/schemas/Sequence"
+          }
+        }
+      },
+      "DbReferenceType" : {
+        "type" : "object",
+        "properties" : {
+          "property" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/PropertyType"
+            }
+          },
+          "type" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "id" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "versionI" : {
+            "type" : "integer",
+            "format" : "int32",
+            "xml" : {
+              "name" : "version_i",
+              "attribute" : true
+            }
+          },
+          "active" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int32",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "created" : {
+            "type" : "string",
+            "format" : "date-time",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "last" : {
+            "type" : "string",
+            "format" : "date-time",
+            "xml" : {
+              "attribute" : true
+            }
+          }
+        }
+      },
+      "Entry" : {
+        "required" : [ "accession", "sequence" ],
+        "type" : "object",
+        "properties" : {
+          "accession" : {
+            "type" : "string"
+          },
+          "dbReference" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/DbReferenceType"
+            }
+          },
+          "signatureSequenceMatch" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/SeqFeatureType"
+            }
+          },
+          "sequence" : {
+            "$ref" : "#/components/schemas/Sequence"
+          },
+          "dataset" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "uniProtKBExclusion" : {
+            "type" : "string",
+            "xml" : {
+              "name" : "UniProtKB_exclusion",
+              "attribute" : true
+            }
+          }
+        },
+        "xml" : {
+          "name" : "entry",
+          "namespace" : "http://uniprot.org/uniparc"
+        }
+      },
+      "LocationType" : {
+        "type" : "object",
+        "properties" : {
+          "start" : {
+            "type" : "integer",
+            "format" : "int32",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "end" : {
+            "type" : "integer",
+            "format" : "int32",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "alignment" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          }
+        }
+      },
+      "PropertyType" : {
+        "type" : "object",
+        "properties" : {
+          "type" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "value" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          }
+        }
+      },
+      "SeqFeatureGroupType" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "id" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          }
+        }
+      },
+      "SeqFeatureType" : {
+        "required" : [ "lcn" ],
+        "type" : "object",
+        "properties" : {
+          "ipr" : {
+            "$ref" : "#/components/schemas/SeqFeatureGroupType"
+          },
+          "lcn" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/LocationType"
+            }
+          },
+          "database" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "id" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          }
+        }
+      },
+      "CommonOrganism" : {
+        "type" : "object",
+        "properties" : {
+          "commonTaxonId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "commonTaxon" : {
+            "type" : "string"
+          },
+          "topLevel" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Proteome" : {
+        "type" : "object",
+        "properties" : {
+          "component" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "UniParcEntryLight" : {
+        "type" : "object",
+        "properties" : {
+          "oldestCrossRefCreated" : {
+            "type" : "string",
+            "format" : "date"
+          },
+          "mostRecentCrossRefUpdated" : {
+            "type" : "string",
+            "format" : "date"
+          },
+          "commonTaxons" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CommonOrganism"
+            }
+          },
+          "organisms" : {
+            "uniqueItems" : true,
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Organism"
+            }
+          },
+          "proteinNames" : {
+            "uniqueItems" : true,
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "geneNames" : {
+            "uniqueItems" : true,
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "proteomes" : {
+            "uniqueItems" : true,
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Proteome"
+            }
+          },
+          "uniProtKBAccessions" : {
+            "uniqueItems" : true,
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "uniParcId" : {
+            "type" : "string"
+          },
+          "sequenceFeatures" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/SequenceFeature"
+            }
+          },
+          "sequence" : {
+            "$ref" : "#/components/schemas/Sequence"
+          },
+          "crossReferenceCount" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "extraAttributes" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "object"
+            }
+          }
+        }
+      },
+      "StreamResult" : {
+        "type" : "object",
+        "properties" : {
+          "results" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/UniParcEntry"
+            }
+          },
+          "error" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Facet" : {
+        "type" : "object",
+        "properties" : {
+          "label" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "allowMultipleSelection" : {
+            "type" : "boolean"
+          },
+          "values" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/FacetItem"
+            }
+          }
+        }
+      },
+      "FacetItem" : {
+        "type" : "object",
+        "properties" : {
+          "label" : {
+            "type" : "string"
+          },
+          "value" : {
+            "type" : "string"
+          },
+          "count" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "ProblemPair" : {
+        "type" : "object",
+        "properties" : {
+          "code" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "message" : {
+            "type" : "string"
+          }
+        }
+      },
+      "SearchResult" : {
+        "type" : "object",
+        "properties" : {
+          "results" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/UniParcEntry"
+            }
+          },
+          "facets" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Facet"
+            }
+          },
+          "matchedFields" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TermInfo"
+            }
+          },
+          "suggestions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Suggestion"
+            }
+          },
+          "warnings" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ProblemPair"
+            }
+          }
+        }
+      },
+      "Suggestion" : {
+        "type" : "object",
+        "properties" : {
+          "query" : {
+            "type" : "string"
+          },
+          "hits" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "TermInfo" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "hits" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      }
+    }
+  }
+}

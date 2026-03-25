@@ -1,0 +1,2 @@
+[console_scripts]
+uniprot-cli = uniprot_cli.cli:main

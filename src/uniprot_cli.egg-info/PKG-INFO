@@ -1,0 +1,85 @@
+Metadata-Version: 2.4
+Name: uniprot-cli
+Version: 0.1.0
+Summary: Command-line client for the UniProt REST API
+License: 0BSD
+Project-URL: Homepage, https://github.com/decent-tools-for-thought/uniprot-cli
+Project-URL: Repository, https://github.com/decent-tools-for-thought/uniprot-cli
+Project-URL: Issues, https://github.com/decent-tools-for-thought/uniprot-cli/issues
+Project-URL: Documentation, https://rest.uniprot.org/uniprotkb/api/docs
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: httpx>=0.28.1
+Dynamic: license-file
+
+# uniprot-cli
+
+`uniprot-cli` is a Python/`uv`-friendly command line client for the UniProt REST
+API.
+
+The repository follows the same shape as the other Python CLI projects in the
+`decent-tools-for-thought` organization:
+
+- `src/` layout
+- library code separated from the thin CLI entrypoint
+- `pyproject.toml` build metadata
+- `uv.lock` for reproducible installs
+- `packaging/arch/` reserved for AUR packaging support
+
+The library includes:
+
+- a generic client over the published UniProt OpenAPI specs
+- convenience methods for single-entry lookup, search, stream, and ID mapping
+- local disk caching for GET requests
+- an LLM-oriented `docs` command that summarizes every endpoint across the
+  shipped UniProt specs
+
+## Install
+
+```bash
+uv sync
+```
+
+## Basic usage
+
+```bash
+uniprot-cli get-entry uniprotkb P05067
+uniprot-cli search uniprotkb "gene:APP AND organism_id:9606" --query-param size=1
+uniprot-cli stream taxonomy "scientific_name:Homo sapiens" --query-param format=json
+uniprot-cli idmapping run --from UniProtKB_AC-ID --to GeneID P05067 Q9Y261
+uniprot-cli docs uniprotkb
+uniprot-cli docs idmapping --format json
+```
+
+## Generic requests
+
+The `request` command calls any shipped operation directly by operation key:
+
+```bash
+uniprot-cli request uniprotkb.entry --path accession=P05067 --query format=json
+uniprot-cli request uniref.search --query 'query=member_id:P05067' --query size=5
+```
+
+## Cache management
+
+```bash
+uniprot-cli cache stats
+uniprot-cli cache prune --max-size-gb 5
+uniprot-cli cache clear
+```
+
+## Environment variables
+
+- `UNIPROT_API_BASE_URL`
+- `UNIPROT_CACHE_DIR`
+- `UNIPROT_CACHE_MAX_BYTES`
+- `XDG_CACHE_HOME`
+
+## Development
+
+```bash
+uv run pytest
+uv run ruff check .
+uv run mypy
+```

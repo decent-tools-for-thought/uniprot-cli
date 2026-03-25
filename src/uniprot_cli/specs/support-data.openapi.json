@@ -1,0 +1,2027 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "OpenAPI definition",
+    "version" : "v0"
+  },
+  "servers" : [ {
+    "url" : "https://rest.uniprot.org/",
+    "description" : "UniProt REST API Server"
+  } ],
+  "tags" : [ {
+    "name" : "Literature citations",
+    "description" : "Search publications that are linked to UniProtKB. Publications can be manually curated, computationally mapped, or community curated."
+  }, {
+    "name" : "Keywords",
+    "description" : "UniProtKB Keywords constitute a controlled vocabulary with a hierarchical structure. Keywords summarise the content of a UniProtKB entry and facilitate the search for proteins of interest. An entry often contains several keywords. Keywords can be used to retrieve subsets of protein entries. Keywords are classified in 10 categories: Biological process, Cellular component, Coding sequence diversity, Developmental stage, DiseaseEntry, Domain, Ligand, Molecular function, Post-translational modification, Technical term."
+  }, {
+    "name" : "Human diseases",
+    "description" : "The human diseases in which proteins are involved are described in UniProtKB entries with a controlled vocabulary."
+  }, {
+    "name" : "Subcellular locations",
+    "description" : "The subcellular locations in which a protein is found are described in UniProtKB entries with a controlled vocabulary, which includes also membrane topology and orientation terms."
+  }, {
+    "name" : "Cross-referenced databases",
+    "description" : "The cross-references section of UniProtKB entries displays explicit and implicit links to databases such as nucleotide sequence databases, model organism databases and genomics and proteomics resources. A single entry can have cross-references to several dozen different databases and have several hundred individual links. The databases are categorized for easy user perusal and understanding of how the different databases relate to both UniProtKB and to each other"
+  }, {
+    "name" : "Taxonomy",
+    "description" : "UniProtKB taxonomy data is manually curated: next to manually verified organism names, we provide a selection of external links, organism strains and viral host information."
+  } ],
+  "paths" : {
+    "/taxonomy/{taxonId}" : {
+      "get" : {
+        "tags" : [ "Taxonomy" ],
+        "summary" : "Get taxonomy entry by a single taxon id.",
+        "description" : "Search taxonomy entry by id to return all data associated with that entry. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "getById",
+        "parameters" : [ {
+          "name" : "taxonId",
+          "in" : "path",
+          "description" : "Unique identifier for the taxonomy entry",
+          "required" : true,
+          "schema" : {
+            "pattern" : "^[0-9]+$",
+            "type" : "string"
+          },
+          "example" : 9606
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/taxonomy/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "id,common_name,scientific_name,lineage"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TaxonomyEntry"
+                }
+              },
+              "text/plain;format=tsv" : { },
+              "text/plain;format=list" : { },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { },
+              "application/rdf+xml" : { }
+            }
+          }
+        }
+      }
+    },
+    "/taxonomy/stream" : {
+      "get" : {
+        "tags" : [ "Taxonomy" ],
+        "summary" : "Download taxonomy entries retrieved by a search query.",
+        "description" : "The stream endpoint uses a request query to return all entries associated with the search term in a single download. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "stream",
+        "parameters" : [ {
+          "name" : "query",
+          "in" : "query",
+          "description" : "Criteria to search taxonomy. Advanced queries can be built with parentheses and conditionals such as AND, OR and NOT. <a href='https://rest.uniprot.org/configure/taxonomy/search-fields' target='_blank' rel='noopener noreferrer'>List of valid search fields</a>",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "Homo sapiens"
+        }, {
+          "name" : "sort",
+          "in" : "query",
+          "description" : "Specify field by which to sort results. <a href='https://rest.uniprot.org/configure/taxonomy/result-fields' target='_blank' rel='noopener noreferrer'>List of valid sort fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "scientific desc"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/taxonomy/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "id,common_name,scientific_name,lineage"
+        }, {
+          "name" : "download",
+          "in" : "query",
+          "description" : "Specify <tt>true</tt> to download as file, default is <tt>false</tt>.",
+          "required" : false,
+          "schema" : {
+            "pattern" : "^(?:true|false)$",
+            "type" : "boolean"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/StreamResult"
+                }
+              },
+              "text/plain;format=tsv" : { },
+              "text/plain;format=list" : { },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { },
+              "application/rdf+xml" : { }
+            }
+          }
+        }
+      }
+    },
+    "/taxonomy/search" : {
+      "get" : {
+        "tags" : [ "Taxonomy" ],
+        "summary" : "Retrieve taxonomy entries by a search query.",
+        "description" : "The search endpoint uses a request query to return all entries associated with the search term in a paginated list of entries. Use ‘size’ to specify the number of entries per page of results. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "search",
+        "parameters" : [ {
+          "name" : "query",
+          "in" : "query",
+          "description" : "Criteria to search taxonomy. Advanced queries can be built with parentheses and conditionals such as AND, OR and NOT. <a href='https://rest.uniprot.org/configure/taxonomy/search-fields' target='_blank' rel='noopener noreferrer'>List of valid search fields</a>",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "Homo sapiens"
+        }, {
+          "name" : "sort",
+          "in" : "query",
+          "description" : "Specify field by which to sort results. <a href='https://rest.uniprot.org/configure/taxonomy/result-fields' target='_blank' rel='noopener noreferrer'>List of valid sort fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "scientific desc"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/taxonomy/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "id,common_name,scientific_name,lineage"
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "Specify the number of entries per page of results (Pagination size). Default is 25, max is 500",
+          "required" : false,
+          "schema" : {
+            "maximum" : 500,
+            "minimum" : 0,
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "example" : 50
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "TaxonomyEntry",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SearchResult"
+                }
+              },
+              "text/plain;format=tsv" : { },
+              "text/plain;format=list" : { },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { }
+            }
+          }
+        }
+      }
+    },
+    "/locations/{id}" : {
+      "get" : {
+        "tags" : [ "Subcellular locations" ],
+        "summary" : "Get subcellular location entry by a single accession.",
+        "description" : "Search subcellular location entry by id to return all data associated with that entry. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "getById_1",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Unique identifier for the subcellular location entry",
+          "required" : true,
+          "schema" : {
+            "pattern" : "^SL-[0-9]{4}",
+            "type" : "string"
+          },
+          "example" : "SL-0039"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/locations/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "id,name,category"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SubcellularLocationEntry"
+                }
+              },
+              "text/plain;format=tsv" : { },
+              "text/plain;format=list" : { },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { },
+              "text/plain;format=obo" : { },
+              "application/rdf+xml" : { }
+            }
+          }
+        }
+      }
+    },
+    "/locations/stream" : {
+      "get" : {
+        "tags" : [ "Subcellular locations" ],
+        "summary" : "Download subcellular location entries retrieved by a search query.",
+        "description" : "The stream endpoint uses a request query to return all entries associated with the search term in a single download. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "stream_1",
+        "parameters" : [ {
+          "name" : "query",
+          "in" : "query",
+          "description" : "Criteria to search subcellular locations. Advanced queries can be built with parentheses and conditionals such as AND, OR and NOT. <a href='https://rest.uniprot.org/configure/locations/search-fields' target='_blank' rel='noopener noreferrer'>List of valid search fields</a>",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "Cell membrane"
+        }, {
+          "name" : "sort",
+          "in" : "query",
+          "description" : "Specify field by which to sort results. <a href='https://rest.uniprot.org/configure/locations/result-fields' target='_blank' rel='noopener noreferrer'>List of valid sort fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "id asc"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/locations/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "id,name,category"
+        }, {
+          "name" : "download",
+          "in" : "query",
+          "description" : "Specify <tt>true</tt> to download as file, default is <tt>false</tt>.",
+          "required" : false,
+          "schema" : {
+            "pattern" : "^(?:true|false)$",
+            "type" : "boolean"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/StreamResult"
+                }
+              },
+              "text/plain;format=tsv" : { },
+              "text/plain;format=list" : { },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { },
+              "text/plain;format=obo" : { },
+              "application/rdf+xml" : { }
+            }
+          }
+        }
+      }
+    },
+    "/locations/search" : {
+      "get" : {
+        "tags" : [ "Subcellular locations" ],
+        "summary" : "Retrieve subcellular location entries by a search query.",
+        "description" : "The search endpoint uses a request query to return all entries associated with the search term in a paginated list of entries. Use ‘size’ to specify the number of entries per page of results. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "search_1",
+        "parameters" : [ {
+          "name" : "query",
+          "in" : "query",
+          "description" : "Criteria to search subcellular locations. Advanced queries can be built with parentheses and conditionals such as AND, OR and NOT. <a href='https://rest.uniprot.org/configure/locations/search-fields' target='_blank' rel='noopener noreferrer'>List of valid search fields</a>",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "Cell membrane"
+        }, {
+          "name" : "sort",
+          "in" : "query",
+          "description" : "Specify field by which to sort results. <a href='https://rest.uniprot.org/configure/locations/result-fields' target='_blank' rel='noopener noreferrer'>List of valid sort fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "id asc"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/locations/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "id,name,category"
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "Specify the number of entries per page of results (Pagination size). Default is 25, max is 500",
+          "required" : false,
+          "schema" : {
+            "maximum" : 500,
+            "minimum" : 0,
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "example" : 50
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "SubcellularLocationEntry",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SearchResult"
+                }
+              },
+              "text/plain;format=tsv" : { },
+              "text/plain;format=list" : { },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { },
+              "text/plain;format=obo" : { }
+            }
+          }
+        }
+      }
+    },
+    "/keywords/{id}" : {
+      "get" : {
+        "tags" : [ "Keywords" ],
+        "summary" : "Get keyword entry by a single accession.",
+        "description" : "Search keyword entry by id to return all data associated with that entry. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "getById_2",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Unique identifier for the keyword entry",
+          "required" : true,
+          "schema" : {
+            "pattern" : "^KW-\\d{4}$",
+            "type" : "string"
+          },
+          "example" : "KW-0020"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/keywords/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "id,name,category"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/KeywordEntry"
+                }
+              },
+              "text/plain;format=tsv" : { },
+              "text/plain;format=list" : { },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { },
+              "application/rdf+xml" : { },
+              "text/plain;format=obo" : { }
+            }
+          }
+        }
+      }
+    },
+    "/keywords/stream" : {
+      "get" : {
+        "tags" : [ "Keywords" ],
+        "summary" : "Download keyword entries retrieved by a search query.",
+        "description" : "The stream endpoint uses a request query to return all entries associated with the search term in a single download. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "stream_2",
+        "parameters" : [ {
+          "name" : "query",
+          "in" : "query",
+          "description" : "Criteria to search keywords. Advanced queries can be built with parentheses and conditionals such as AND, OR and NOT. <a href='https://rest.uniprot.org/configure/keywords/search-fields' target='_blank' rel='noopener noreferrer'>List of valid search fields</a>",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "Phosphoprotein"
+        }, {
+          "name" : "sort",
+          "in" : "query",
+          "description" : "Specify field by which to sort results. <a href='https://rest.uniprot.org/configure/keywords/result-fields' target='_blank' rel='noopener noreferrer'>List of valid sort fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "name asc"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/keywords/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "id,name,category"
+        }, {
+          "name" : "download",
+          "in" : "query",
+          "description" : "Specify <tt>true</tt> to download as file, default is <tt>false</tt>.",
+          "required" : false,
+          "schema" : {
+            "pattern" : "^(?:true|false)$",
+            "type" : "boolean"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/StreamResult"
+                }
+              },
+              "text/plain;format=tsv" : { },
+              "text/plain;format=list" : { },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { },
+              "text/plain;format=obo" : { },
+              "application/rdf+xml" : { }
+            }
+          }
+        }
+      }
+    },
+    "/keywords/search" : {
+      "get" : {
+        "tags" : [ "Keywords" ],
+        "summary" : "Retrieve keyword entries by a search query.",
+        "description" : "The search endpoint uses a request query to return all entries associated with the search term in a paginated list of entries. Use ‘size’ to specify the number of entries per page of results. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "search_2",
+        "parameters" : [ {
+          "name" : "query",
+          "in" : "query",
+          "description" : "Criteria to search keywords. Advanced queries can be built with parentheses and conditionals such as AND, OR and NOT. <a href='https://rest.uniprot.org/configure/keywords/search-fields' target='_blank' rel='noopener noreferrer'>List of valid search fields</a>",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "Phosphoprotein"
+        }, {
+          "name" : "sort",
+          "in" : "query",
+          "description" : "Specify field by which to sort results. <a href='https://rest.uniprot.org/configure/keywords/result-fields' target='_blank' rel='noopener noreferrer'>List of valid sort fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "name asc"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/keywords/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "id,name,category"
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "Specify the number of entries per page of results (Pagination size). Default is 25, max is 500",
+          "required" : false,
+          "schema" : {
+            "maximum" : 500,
+            "minimum" : 0,
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "example" : 50
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "KeywordEntry",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SearchResult"
+                }
+              },
+              "text/plain;format=tsv" : { },
+              "text/plain;format=list" : { },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { },
+              "text/plain;format=obo" : { }
+            }
+          }
+        }
+      }
+    },
+    "/diseases/{id}" : {
+      "get" : {
+        "tags" : [ "Human diseases" ],
+        "summary" : "Get human disease entry by a single accession.",
+        "description" : "Search human disease entry by id to return all data associated with that entry. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "getByAccession",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Unique identifier for the human disease entry",
+          "required" : true,
+          "schema" : {
+            "pattern" : "DI-(\\d{5})",
+            "type" : "string"
+          },
+          "example" : "DI-04530"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/diseases/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "id,name"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/DiseaseEntry"
+                }
+              },
+              "text/plain;format=tsv" : { },
+              "text/plain;format=list" : { },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { },
+              "text/plain;format=obo" : { },
+              "application/rdf+xml" : { }
+            }
+          }
+        }
+      }
+    },
+    "/diseases/stream" : {
+      "get" : {
+        "tags" : [ "Human diseases" ],
+        "summary" : "Download human disease entries retrieved by a search query.",
+        "description" : "The stream endpoint uses a request query to return all entries associated with the search term in a single download. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "stream_3",
+        "parameters" : [ {
+          "name" : "query",
+          "in" : "query",
+          "description" : "Criteria to search human diseases. Advanced queries can be built with parentheses and conditionals such as AND, OR and NOT. <a href='https://rest.uniprot.org/configure/diseases/search-fields' target='_blank' rel='noopener noreferrer'>List of valid search fields</a>",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "Alzheimer"
+        }, {
+          "name" : "sort",
+          "in" : "query",
+          "description" : "Specify field by which to sort results. <a href='https://rest.uniprot.org/configure/diseases/result-fields' target='_blank' rel='noopener noreferrer'>List of valid sort fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "id asc"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/diseases/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "id,name"
+        }, {
+          "name" : "download",
+          "in" : "query",
+          "description" : "Specify <tt>true</tt> to download as file, default is <tt>false</tt>.",
+          "required" : false,
+          "schema" : {
+            "pattern" : "^(?:true|false)$",
+            "type" : "boolean"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/StreamResult"
+                }
+              },
+              "text/plain;format=tsv" : { },
+              "text/plain;format=list" : { },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { },
+              "text/plain;format=obo" : { },
+              "application/rdf+xml" : { }
+            }
+          }
+        }
+      }
+    },
+    "/diseases/search" : {
+      "get" : {
+        "tags" : [ "Human diseases" ],
+        "summary" : "Retrieve human disease entries by a search query.",
+        "description" : "The search endpoint uses a request query to return all entries associated with the search term in a paginated list of entries. Use ‘size’ to specify the number of entries per page of results. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "searchCursor",
+        "parameters" : [ {
+          "name" : "query",
+          "in" : "query",
+          "description" : "Criteria to search human diseases. Advanced queries can be built with parentheses and conditionals such as AND, OR and NOT. <a href='https://rest.uniprot.org/configure/diseases/search-fields' target='_blank' rel='noopener noreferrer'>List of valid search fields</a>",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "Alzheimer"
+        }, {
+          "name" : "sort",
+          "in" : "query",
+          "description" : "Specify field by which to sort results. <a href='https://rest.uniprot.org/configure/diseases/result-fields' target='_blank' rel='noopener noreferrer'>List of valid sort fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "id asc"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/diseases/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "id,name"
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "Specify the number of entries per page of results (Pagination size). Default is 25, max is 500",
+          "required" : false,
+          "schema" : {
+            "maximum" : 500,
+            "minimum" : 0,
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "example" : 50
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "DiseaseEntry",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SearchResult"
+                }
+              },
+              "text/plain;format=tsv" : { },
+              "text/plain;format=list" : { },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { },
+              "text/plain;format=obo" : { }
+            }
+          }
+        }
+      }
+    },
+    "/database/{id}" : {
+      "get" : {
+        "tags" : [ "Cross-referenced databases" ],
+        "summary" : "Get cross-reference database entry by a single accession.",
+        "description" : "Search cross-reference database entry by id to return all data associated with that entry. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "findByAccession",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Unique identifier for the cross-reference database entry",
+          "required" : true,
+          "schema" : {
+            "pattern" : "DB-(\\d{4})",
+            "type" : "string"
+          },
+          "example" : "DB-0244"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/uniprotkb/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "id,name,abbrev,category"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CrossRefEntry"
+                }
+              },
+              "application/rdf+xml" : { }
+            }
+          }
+        }
+      }
+    },
+    "/database/stream" : {
+      "get" : {
+        "tags" : [ "Cross-referenced databases" ],
+        "summary" : "Download cross-reference database entries retrieved by a search query.",
+        "description" : "The stream endpoint uses a request query to return all entries associated with the search term in a single download. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "stream_4",
+        "parameters" : [ {
+          "name" : "query",
+          "in" : "query",
+          "description" : "Criteria to search cross-reference databases. Advanced queries can be built with parentheses and conditionals such as AND, OR and NOT. <a href='https://rest.uniprot.org/configure/database/search-fields' target='_blank' rel='noopener noreferrer'>List of valid search fields</a>",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "Ensembl"
+        }, {
+          "name" : "sort",
+          "in" : "query",
+          "description" : "Specify field by which to sort results. <a href='https://rest.uniprot.org/configure/database/result-fields' target='_blank' rel='noopener noreferrer'>List of valid sort fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "id desc"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/uniprotkb/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "id,name,abbrev,category"
+        }, {
+          "name" : "download",
+          "in" : "query",
+          "description" : "Specify <tt>true</tt> to download as file, default is <tt>false</tt>.",
+          "required" : false,
+          "schema" : {
+            "pattern" : "^(?:true|false)$",
+            "type" : "boolean"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/StreamResult"
+                }
+              },
+              "application/rdf+xml" : { }
+            }
+          }
+        }
+      }
+    },
+    "/database/search" : {
+      "get" : {
+        "tags" : [ "Cross-referenced databases" ],
+        "summary" : "Retrieve cross-reference database entries by a search query.",
+        "description" : "The search endpoint uses a request query to return all entries associated with the search term in a paginated list of entries. Use ‘size’ to specify the number of entries per page of results. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "search_3",
+        "parameters" : [ {
+          "name" : "query",
+          "in" : "query",
+          "description" : "Criteria to search cross-reference databases. Advanced queries can be built with parentheses and conditionals such as AND, OR and NOT. <a href='https://rest.uniprot.org/configure/database/search-fields' target='_blank' rel='noopener noreferrer'>List of valid search fields</a>",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "Ensembl"
+        }, {
+          "name" : "sort",
+          "in" : "query",
+          "description" : "Specify field by which to sort results. <a href='https://rest.uniprot.org/configure/database/result-fields' target='_blank' rel='noopener noreferrer'>List of valid sort fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "id desc"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/uniprotkb/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "id,name,abbrev,category"
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "Specify the number of entries per page of results (Pagination size). Default is 25, max is 500",
+          "required" : false,
+          "schema" : {
+            "maximum" : 500,
+            "minimum" : 0,
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "example" : 50
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "CrossRefEntry",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SearchResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/citations/{citationId}" : {
+      "get" : {
+        "tags" : [ "Literature citations" ],
+        "summary" : "Get literature citation entry by a single accession.",
+        "description" : "Search literature citation entry by id to return all data associated with that entry. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "getByLiteratureId",
+        "parameters" : [ {
+          "name" : "citationId",
+          "in" : "path",
+          "description" : "Unique identifier for the literature citation entry",
+          "required" : true,
+          "schema" : {
+            "pattern" : "^[0-9]+$|CI-\\w{1,13}$|IND[0-9]+$",
+            "type" : "string"
+          },
+          "example" : 10024047
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/citations/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "id,title,authors,publication_date"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/LiteratureEntry"
+                }
+              },
+              "text/plain;format=tsv" : { },
+              "text/plain;format=list" : { },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { },
+              "application/rdf+xml" : { }
+            }
+          }
+        }
+      }
+    },
+    "/citations/stream" : {
+      "get" : {
+        "tags" : [ "Literature citations" ],
+        "summary" : "Download literature citation entries retrieved by a search query.",
+        "description" : "The stream endpoint uses a request query to return all entries associated with the search term in a single download. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "stream_5",
+        "parameters" : [ {
+          "name" : "query",
+          "in" : "query",
+          "description" : "Criteria to search literature citations. Advanced queries can be built with parentheses and conditionals such as AND, OR and NOT. <a href='https://rest.uniprot.org/configure/citations/search-fields' target='_blank' rel='noopener noreferrer'>List of valid search fields</a>",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "genome analysis"
+        }, {
+          "name" : "sort",
+          "in" : "query",
+          "description" : "Specify field by which to sort results. <a href='https://rest.uniprot.org/configure/citations/result-fields' target='_blank' rel='noopener noreferrer'>List of valid sort fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "id desc"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/citations/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "id,title,authors,publication_date"
+        }, {
+          "name" : "download",
+          "in" : "query",
+          "description" : "Specify <tt>true</tt> to download as file, default is <tt>false</tt>.",
+          "required" : false,
+          "schema" : {
+            "pattern" : "^(?:true|false)$",
+            "type" : "boolean"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/StreamResult"
+                }
+              },
+              "text/plain;format=tsv" : { },
+              "text/plain;format=list" : { },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { },
+              "application/rdf+xml" : { }
+            }
+          }
+        }
+      }
+    },
+    "/citations/search" : {
+      "get" : {
+        "tags" : [ "Literature citations" ],
+        "summary" : "Retrieve literature citation entries by a search query.",
+        "description" : "The search endpoint uses a request query to return all entries associated with the search term in a paginated list of entries. Use ‘size’ to specify the number of entries per page of results. Specify <tt>fields</tt> to return only data for specific sections of that entry that are of interest to you",
+        "operationId" : "search_4",
+        "parameters" : [ {
+          "name" : "query",
+          "in" : "query",
+          "description" : "Criteria to search literature citations. Advanced queries can be built with parentheses and conditionals such as AND, OR and NOT. <a href='https://rest.uniprot.org/configure/citations/search-fields' target='_blank' rel='noopener noreferrer'>List of valid search fields</a>",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "genome analysis"
+        }, {
+          "name" : "sort",
+          "in" : "query",
+          "description" : "Specify field by which to sort results. <a href='https://rest.uniprot.org/configure/citations/result-fields' target='_blank' rel='noopener noreferrer'>List of valid sort fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "id desc"
+        }, {
+          "name" : "fields",
+          "in" : "query",
+          "description" : "List of entry sections (fields) to be returned, separated by commas.  <a href='https://rest.uniprot.org/configure/citations/result-fields' target='_blank' rel='noopener noreferrer'>List of valid fields</a>",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "id,title,authors,publication_date"
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "Specify the number of entries per page of results (Pagination size). Default is 25, max is 500",
+          "required" : false,
+          "schema" : {
+            "maximum" : 500,
+            "minimum" : 0,
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "example" : 50
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "LiteratureEntry",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SearchResult"
+                }
+              },
+              "text/plain;format=tsv" : { },
+              "text/plain;format=list" : { },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "Taxonomy" : {
+        "type" : "object",
+        "properties" : {
+          "mnemonic" : {
+            "type" : "string"
+          },
+          "taxonId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "scientificName" : {
+            "type" : "string"
+          },
+          "commonName" : {
+            "type" : "string"
+          },
+          "synonyms" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      },
+      "TaxonomyEntry" : {
+        "type" : "object",
+        "properties" : {
+          "links" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "otherNames" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "lineages" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TaxonomyLineage"
+            }
+          },
+          "rank" : {
+            "type" : "string",
+            "enum" : [ "strain", "serotype", "series", "morph", "biotype", "clade", "genotype", "isolate", "forma specialis", "pathogroup", "serogroup", "section", "subsection", "forma", "varietas", "subspecies", "species", "species subgroup", "species group", "subgenus", "genus", "subtribe", "tribe", "subfamily", "family", "superfamily", "parvorder", "infraorder", "suborder", "order", "superorder", "subcohort", "cohort", "infraclass", "subclass", "class", "superclass", "subphylum", "phylum", "superphylum", "subkingdom", "kingdom", "superkingdom", "realm", "domain", "subvariety", "acellular root", "cellular root", "no rank" ]
+          },
+          "strains" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TaxonomyStrain"
+            }
+          },
+          "hosts" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Taxonomy"
+            }
+          },
+          "inactiveReason" : {
+            "$ref" : "#/components/schemas/TaxonomyInactiveReason"
+          },
+          "statistics" : {
+            "$ref" : "#/components/schemas/TaxonomyStatistics"
+          },
+          "hidden" : {
+            "type" : "boolean"
+          },
+          "parent" : {
+            "$ref" : "#/components/schemas/Taxonomy"
+          },
+          "active" : {
+            "type" : "boolean"
+          },
+          "mnemonic" : {
+            "type" : "string"
+          },
+          "taxonId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "scientificName" : {
+            "type" : "string"
+          },
+          "commonName" : {
+            "type" : "string"
+          },
+          "synonyms" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      },
+      "TaxonomyInactiveReason" : {
+        "type" : "object",
+        "properties" : {
+          "inactiveReasonType" : {
+            "type" : "string",
+            "enum" : [ "DELETED", "MERGED" ]
+          },
+          "mergedTo" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "TaxonomyLineage" : {
+        "type" : "object",
+        "properties" : {
+          "rank" : {
+            "type" : "string",
+            "enum" : [ "strain", "serotype", "series", "morph", "biotype", "clade", "genotype", "isolate", "forma specialis", "pathogroup", "serogroup", "section", "subsection", "forma", "varietas", "subspecies", "species", "species subgroup", "species group", "subgenus", "genus", "subtribe", "tribe", "subfamily", "family", "superfamily", "parvorder", "infraorder", "suborder", "order", "superorder", "subcohort", "cohort", "infraclass", "subclass", "class", "superclass", "subphylum", "phylum", "superphylum", "subkingdom", "kingdom", "superkingdom", "realm", "domain", "subvariety", "acellular root", "cellular root", "no rank" ]
+          },
+          "taxonId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "hidden" : {
+            "type" : "boolean"
+          },
+          "scientificName" : {
+            "type" : "string"
+          },
+          "commonName" : {
+            "type" : "string"
+          },
+          "synonyms" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      },
+      "TaxonomyStatistics" : {
+        "type" : "object",
+        "properties" : {
+          "referenceProteomeCount" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "proteomeCount" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "reviewedProteinCount" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "unreviewedProteinCount" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "TaxonomyStrain" : {
+        "type" : "object",
+        "properties" : {
+          "synonyms" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "name" : {
+            "type" : "string"
+          }
+        }
+      },
+      "StreamResult" : {
+        "type" : "object",
+        "properties" : {
+          "results" : {
+            "type" : "array",
+            "items" : {
+              "type" : "object",
+              "anyOf" : [ {
+                "$ref" : "#/components/schemas/KeywordEntry"
+              }, {
+                "$ref" : "#/components/schemas/CrossRefEntry"
+              }, {
+                "$ref" : "#/components/schemas/TaxonomyEntry"
+              }, {
+                "$ref" : "#/components/schemas/SubcellularLocationEntry"
+              }, {
+                "$ref" : "#/components/schemas/DiseaseEntry"
+              }, {
+                "$ref" : "#/components/schemas/LiteratureEntry"
+              } ]
+            }
+          },
+          "error" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Facet" : {
+        "type" : "object",
+        "properties" : {
+          "label" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "allowMultipleSelection" : {
+            "type" : "boolean"
+          },
+          "values" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/FacetItem"
+            }
+          }
+        }
+      },
+      "FacetItem" : {
+        "type" : "object",
+        "properties" : {
+          "label" : {
+            "type" : "string"
+          },
+          "value" : {
+            "type" : "string"
+          },
+          "count" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "ProblemPair" : {
+        "type" : "object",
+        "properties" : {
+          "code" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "message" : {
+            "type" : "string"
+          }
+        }
+      },
+      "SearchResult" : {
+        "type" : "object",
+        "properties" : {
+          "results" : {
+            "type" : "array",
+            "items" : {
+              "type" : "object",
+              "anyOf" : [ {
+                "$ref" : "#/components/schemas/KeywordEntry"
+              }, {
+                "$ref" : "#/components/schemas/CrossRefEntry"
+              }, {
+                "$ref" : "#/components/schemas/TaxonomyEntry"
+              }, {
+                "$ref" : "#/components/schemas/SubcellularLocationEntry"
+              }, {
+                "$ref" : "#/components/schemas/DiseaseEntry"
+              }, {
+                "$ref" : "#/components/schemas/LiteratureEntry"
+              } ]
+            }
+          },
+          "facets" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Facet"
+            }
+          },
+          "matchedFields" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TermInfo"
+            }
+          },
+          "suggestions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Suggestion"
+            }
+          },
+          "warnings" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ProblemPair"
+            }
+          }
+        }
+      },
+      "Suggestion" : {
+        "type" : "object",
+        "properties" : {
+          "query" : {
+            "type" : "string"
+          },
+          "hits" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "TermInfo" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "hits" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "GoTerm" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "KeywordId" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Statistics" : {
+        "type" : "object",
+        "properties" : {
+          "reviewedProteinCount" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "unreviewedProteinCount" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "SubcellularLocationEntry" : {
+        "type" : "object",
+        "properties" : {
+          "note" : {
+            "type" : "string"
+          },
+          "isA" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/SubcellularLocationEntry"
+            }
+          },
+          "partOf" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/SubcellularLocationEntry"
+            }
+          },
+          "synonyms" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "geneOntologies" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/GoTerm"
+            }
+          },
+          "links" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "category" : {
+            "type" : "string",
+            "enum" : [ "Cellular component", "Topology", "Orientation" ]
+          },
+          "keyword" : {
+            "$ref" : "#/components/schemas/KeywordId"
+          },
+          "statistics" : {
+            "$ref" : "#/components/schemas/Statistics"
+          },
+          "references" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "definition" : {
+            "type" : "string"
+          },
+          "content" : {
+            "type" : "string"
+          }
+        }
+      },
+      "KeywordEntry" : {
+        "type" : "object",
+        "properties" : {
+          "synonyms" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "geneOntologies" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/GoTerm"
+            }
+          },
+          "links" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "accession" : {
+            "type" : "string"
+          },
+          "category" : {
+            "type" : "string",
+            "enum" : [ "Biological process", "Cellular component", "Coding sequence diversity", "Developmental stage", "Disease", "Domain", "Ligand", "Molecular function", "PTM", "Technical term", "Unknown" ]
+          },
+          "keyword" : {
+            "$ref" : "#/components/schemas/KeywordId"
+          },
+          "parents" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/KeywordEntry"
+            }
+          },
+          "statistics" : {
+            "$ref" : "#/components/schemas/Statistics"
+          },
+          "definition" : {
+            "type" : "string"
+          },
+          "children" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/KeywordEntry"
+            }
+          }
+        }
+      },
+      "DiseaseCrossReference" : {
+        "type" : "object",
+        "properties" : {
+          "databaseType" : {
+            "type" : "string"
+          },
+          "properties" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "DiseaseEntry" : {
+        "type" : "object",
+        "properties" : {
+          "alternativeNames" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "acronym" : {
+            "type" : "string"
+          },
+          "crossReferences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/DiseaseCrossReference"
+            }
+          },
+          "keywords" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/KeywordId"
+            }
+          },
+          "statistics" : {
+            "$ref" : "#/components/schemas/Statistics"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "definition" : {
+            "type" : "string"
+          }
+        }
+      },
+      "CrossRefEntry" : {
+        "type" : "object",
+        "properties" : {
+          "abbrev" : {
+            "type" : "string"
+          },
+          "pubMedId" : {
+            "type" : "string"
+          },
+          "doiId" : {
+            "type" : "string"
+          },
+          "linkType" : {
+            "type" : "string"
+          },
+          "servers" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "dbUrl" : {
+            "type" : "string"
+          },
+          "category" : {
+            "type" : "string"
+          },
+          "statistics" : {
+            "$ref" : "#/components/schemas/Statistics"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Citation" : {
+        "type" : "object",
+        "properties" : {
+          "citationCrossReferences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CrossReferenceCitationDatabase"
+            }
+          },
+          "publicationDate" : {
+            "type" : "string"
+          },
+          "authoringGroups" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "authors" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "citationType" : {
+            "type" : "string",
+            "enum" : [ "journal article", "book", "online journal article", "patent", "submission", "thesis", "UniProt indexed literatures", "unpublished observations" ]
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          }
+        },
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/Book"
+        }, {
+          "$ref" : "#/components/schemas/ElectronicArticle"
+        }, {
+          "$ref" : "#/components/schemas/JournalArticle"
+        }, {
+          "$ref" : "#/components/schemas/Literature"
+        }, {
+          "$ref" : "#/components/schemas/Patent"
+        }, {
+          "$ref" : "#/components/schemas/Submission"
+        }, {
+          "$ref" : "#/components/schemas/Thesis"
+        } ]
+      },
+      "CrossReferenceCitationDatabase" : {
+        "type" : "object",
+        "properties" : {
+          "database" : {
+            "type" : "string",
+            "enum" : [ "PubMed", "DOI", "AGRICOLA" ]
+          },
+          "properties" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Property"
+            }
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "LiteratureEntry" : {
+        "type" : "object",
+        "properties" : {
+          "citation" : {
+            "$ref" : "#/components/schemas/Citation"
+          },
+          "statistics" : {
+            "$ref" : "#/components/schemas/LiteratureStatistics"
+          }
+        }
+      },
+      "LiteratureStatistics" : {
+        "type" : "object",
+        "properties" : {
+          "computationallyMappedProteinCount" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "communityMappedProteinCount" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "largeScale" : {
+            "type" : "boolean"
+          },
+          "reviewedProteinCount" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "unreviewedProteinCount" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "Property" : {
+        "type" : "object",
+        "properties" : {
+          "key" : {
+            "type" : "string"
+          },
+          "value" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Literature" : {
+        "type" : "object",
+        "properties" : {
+          "literatureAbstract" : {
+            "type" : "string"
+          },
+          "completeAuthorList" : {
+            "type" : "boolean"
+          },
+          "pubmedId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "doiId" : {
+            "type" : "string"
+          },
+          "lastPage" : {
+            "type" : "string"
+          },
+          "firstPage" : {
+            "type" : "string"
+          },
+          "volume" : {
+            "type" : "string"
+          },
+          "journal" : {
+            "type" : "string"
+          },
+          "citationCrossReferences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CrossReferenceCitationDatabase"
+            }
+          },
+          "publicationDate" : {
+            "type" : "string"
+          },
+          "authoringGroups" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "authors" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Submission" : {
+        "type" : "object",
+        "properties" : {
+          "submissionDatabase" : {
+            "type" : "string",
+            "enum" : [ "PDB data bank", "PIR data bank", "Swiss-Prot", "UniProtKB", "EMBL/GenBank/DDBJ databases" ]
+          },
+          "citationCrossReferences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CrossReferenceCitationDatabase"
+            }
+          },
+          "publicationDate" : {
+            "type" : "string"
+          },
+          "authoringGroups" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "authors" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "ElectronicArticle" : {
+        "type" : "object",
+        "properties" : {
+          "journal" : {
+            "type" : "string"
+          },
+          "locator" : {
+            "type" : "string"
+          },
+          "citationCrossReferences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CrossReferenceCitationDatabase"
+            }
+          },
+          "publicationDate" : {
+            "type" : "string"
+          },
+          "authoringGroups" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "authors" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Thesis" : {
+        "type" : "object",
+        "properties" : {
+          "institute" : {
+            "type" : "string"
+          },
+          "address" : {
+            "type" : "string"
+          },
+          "citationCrossReferences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CrossReferenceCitationDatabase"
+            }
+          },
+          "publicationDate" : {
+            "type" : "string"
+          },
+          "authoringGroups" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "authors" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Book" : {
+        "type" : "object",
+        "properties" : {
+          "lastPage" : {
+            "type" : "string"
+          },
+          "firstPage" : {
+            "type" : "string"
+          },
+          "bookName" : {
+            "type" : "string"
+          },
+          "editors" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "publisher" : {
+            "type" : "string"
+          },
+          "volume" : {
+            "type" : "string"
+          },
+          "address" : {
+            "type" : "string"
+          },
+          "citationCrossReferences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CrossReferenceCitationDatabase"
+            }
+          },
+          "publicationDate" : {
+            "type" : "string"
+          },
+          "authoringGroups" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "authors" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Patent" : {
+        "type" : "object",
+        "properties" : {
+          "patentNumber" : {
+            "type" : "string"
+          },
+          "citationCrossReferences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CrossReferenceCitationDatabase"
+            }
+          },
+          "publicationDate" : {
+            "type" : "string"
+          },
+          "authoringGroups" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "authors" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "JournalArticle" : {
+        "type" : "object",
+        "properties" : {
+          "lastPage" : {
+            "type" : "string"
+          },
+          "firstPage" : {
+            "type" : "string"
+          },
+          "volume" : {
+            "type" : "string"
+          },
+          "journal" : {
+            "type" : "string"
+          },
+          "citationCrossReferences" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CrossReferenceCitationDatabase"
+            }
+          },
+          "publicationDate" : {
+            "type" : "string"
+          },
+          "authoringGroups" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "authors" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          }
+        }
+      }
+    }
+  }
+}
