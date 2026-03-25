@@ -36,6 +36,24 @@ def test_cli_parses_generic_request() -> None:
     assert args.query == ["format=json"]
 
 
+def test_cli_parses_specialized_uniref_shortcut() -> None:
+    parser = build_parser()
+    args = parser.parse_args(
+        [
+            "uniref",
+            "members",
+            "UniRef90_P05067",
+            "--query-param",
+            "format=json",
+        ]
+    )
+
+    assert args.command == "uniref"
+    assert args.uniref_command == "members"
+    assert args.id == "UniRef90_P05067"
+    assert args.query_params == ["format=json"]
+
+
 def test_parser_reads_cache_defaults_from_xdg_config(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:

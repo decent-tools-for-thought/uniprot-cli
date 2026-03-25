@@ -17,6 +17,7 @@ from .client import (
     UniProtCliError,
 )
 from .docs import render_docs
+from .surface import SPECIALIZED_SHORTCUTS, SPECIALIZED_SHORTCUTS_BY_PATH
 
 
 def build_parser(cache_settings: CacheSettings | None = None) -> argparse.ArgumentParser:
@@ -80,7 +81,7 @@ def build_parser(cache_settings: CacheSettings | None = None) -> argparse.Argume
 
     docs_parser = subparsers.add_parser(
         "docs",
-        help="Show LLM-friendly documentation for UniProt operations",
+        help="Show CLI and endpoint documentation for the bundled UniProt surface",
     )
     docs_parser.add_argument("selector", nargs="?", default="all")
     docs_parser.add_argument(
@@ -101,6 +102,19 @@ def build_parser(cache_settings: CacheSettings | None = None) -> argparse.Argume
 
     cache_clear = cache_subparsers.add_parser("clear", help="Delete all cache entries")
     _add_cache_only_args(cache_clear, settings)
+
+    for group_name in sorted({item.group for item in SPECIALIZED_SHORTCUTS}):
+        group_parser = subparsers.add_parser(
+            group_name,
+            help=f"{group_name} collection-specific shortcut commands",
+        )
+        group_subparsers = group_parser.add_subparsers(dest=f"{group_name}_command", required=True)
+        for item in SPECIALIZED_SHORTCUTS:
+            if item.group != group_name:
+                continue
+            shortcut_parser = group_subparsers.add_parser(item.name, help=item.help)
+            shortcut_parser.add_argument(item.identifier_name, metavar=item.identifier_metavar)
+            _add_common_query_args(shortcut_parser, settings)
 
     return parser
 
@@ -194,6 +208,17 @@ def _run_remote(args: argparse.Namespace) -> int:
                 )
             else:
                 raise UniProtCliError(f"unsupported idmapping command: {args.idmapping_command}")
+        elif args.command in {item.group for item in SPECIALIZED_SHORTCUTS}:
+            subcommand_name = getattr(args, f"{args.command}_command")
+            shortcut = SPECIALIZED_SHORTCUTS_BY_PATH[(args.command, subcommand_name)]
+            response = client.request(
+                shortcut.operation_key,
+                path_params={shortcut.identifier_name: getattr(args, shortcut.identifier_name)},
+                query_params=_parse_assignments(args.query_params),
+                use_cache=use_cache,
+                refresh=refresh,
+                decode=decode,
+            )
         else:
             raise UniProtCliError(f"unsupported command: {args.command}")
     _write_response(response)

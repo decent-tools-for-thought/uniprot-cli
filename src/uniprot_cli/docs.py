@@ -10,6 +10,7 @@ from .metadata import (
     filter_endpoint_docs,
     relationship_notes,
 )
+from .surface import SPECIALIZED_SHORTCUTS, TOP_LEVEL_COMMANDS
 
 
 def render_docs(selector: str, output_format: str) -> str:
@@ -22,27 +23,91 @@ def render_docs(selector: str, output_format: str) -> str:
 def _docs_payload(selector: str) -> dict[str, Any]:
     endpoints = filter_endpoint_docs(selector)
     return {
-        "kind": "uniprot_cli_endpoint_docs",
+        "kind": "uniprot_cli_docs",
         "observed_on": OBSERVED_ON,
         "selector": selector,
         "collections": collection_summary(),
         "semantic_model": COLLECTION_SEMANTICS,
         "relationship_notes": relationship_notes(),
+        "cli_surface": {
+            "top_level_commands": list(TOP_LEVEL_COMMANDS),
+            "specialized_shortcuts": [
+                {
+                    "command": item.command_path,
+                    "operation_key": item.operation_key,
+                    "identifier_name": item.identifier_name,
+                    "identifier_metavar": item.identifier_metavar,
+                    "summary": item.summary,
+                }
+                for item in SPECIALIZED_SHORTCUTS
+            ],
+        },
         "endpoints": [item.to_dict() for item in endpoints],
     }
 
 
 def _render_markdown(payload: dict[str, Any]) -> str:
     lines = [
-        "# UniProt CLI Endpoint Documentation",
+        "# UniProt CLI Documentation",
         "",
         f"- observed_on: {payload['observed_on']}",
         f"- selector: {payload['selector']}",
         f"- endpoint_count: {len(payload['endpoints'])}",
         "",
-        "## Collections",
+        "## CLI Surface",
         "",
     ]
+    for command in payload["cli_surface"]["top_level_commands"]:
+        lines.extend(
+            [
+                f"### {command['command']}",
+                "",
+                f"- summary: {command['summary']}",
+            ]
+        )
+        if "datasets" in command:
+            lines.append("- datasets:")
+            for dataset in command["datasets"]:
+                if "identifier" in dataset:
+                    lines.append(
+                        f"  - {dataset['dataset']}: operation={dataset['operation_key']}; "
+                        f"identifier={dataset['identifier']}"
+                    )
+                else:
+                    lines.append(
+                        f"  - {dataset['dataset']}: operation={dataset['operation_key']}"
+                    )
+        if "subcommands" in command:
+            lines.append("- subcommands:")
+            for subcommand in command["subcommands"]:
+                extra = ""
+                if "operation_key" in subcommand:
+                    extra = f"; operation={subcommand['operation_key']}"
+                if "stream_operation_key" in subcommand:
+                    extra += f"; stream_operation={subcommand['stream_operation_key']}"
+                lines.append(f"  - {subcommand['name']}{extra}")
+        lines.append("")
+    lines.extend(
+        [
+            "### Specialized Shortcuts",
+            "",
+        ]
+    )
+    for shortcut in payload["cli_surface"]["specialized_shortcuts"]:
+        lines.extend(
+            [
+                f"- {shortcut['command']}: operation={shortcut['operation_key']}; "
+                f"identifier={shortcut['identifier_name']} ({shortcut['identifier_metavar']}); "
+                f"summary={shortcut['summary']}",
+            ]
+        )
+    lines.extend(
+        [
+            "",
+        "## Collections",
+        "",
+        ]
+    )
     for collection in payload["collections"]:
         lines.extend(
             [
