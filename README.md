@@ -6,7 +6,7 @@
 ![Python](https://img.shields.io/badge/python-3.11%2B-0ea5e9)
 ![License](https://img.shields.io/badge/license-0BSD-14b8a6)
 
-Command-line client for UniProt entry lookup, paginated and streamed search, asynchronous ID mapping, direct operation calls, offline docs, and local caching.
+Command-line client for UniProt entry lookup, paginated and streamed search, asynchronous ID mapping, direct operation calls, offline docs, and optional local caching.
 
 </div>
 
@@ -17,6 +17,7 @@ Command-line client for UniProt entry lookup, paginated and streamed search, asy
 - [Install](#install)
 - [Functionality](#functionality)
 - [Configuration](#configuration)
+- [Config File](#config-file)
 - [Quick Start](#quick-start)
 - [Credits](#credits)
 
@@ -59,13 +60,26 @@ $$\color{#0EA5E9}Cache \space \color{#14B8A6}Control$$
 ## Configuration
 $$\color{#0EA5E9}Tune \space \color{#14B8A6}Defaults$$
 
-By default the CLI targets the published UniProt REST services, caches GET requests on disk, and auto-decodes responses based on content type.
+By default the CLI targets the published UniProt REST services, leaves GET-response caching disabled, and auto-decodes responses based on content type.
 
 - Use `--base-url` to point at another UniProt-compatible endpoint.
 - Use `--decode json|text|bytes` when you want to override automatic response decoding.
+- Use `--max-cache-size-gb` with a value greater than `0` to enable local caching for GET requests.
 - Use `--no-cache` or `--refresh` when you want live responses instead of cached ones.
 
 The main environment variables are `UNIPROT_API_BASE_URL`, `UNIPROT_CACHE_DIR`, `UNIPROT_CACHE_MAX_BYTES`, and `XDG_CACHE_HOME`.
+
+## Config File
+$$\color{#0EA5E9}Set \space \color{#14B8A6}Defaults$$
+
+The CLI reads optional defaults from `$XDG_CONFIG_HOME/uniprot-cli/config.toml`, falling back to `~/.config/uniprot-cli/config.toml`.
+
+Start from `config/default-config.toml` in this repo. The shipped default keeps caching off:
+
+```toml
+[cache]
+max_size_gb = 0.0
+```
 
 ## Quick Start
 $$\color{#0EA5E9}Try \space \color{#14B8A6}Browse$$
