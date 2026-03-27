@@ -17,7 +17,6 @@ Command-line client for the full UniProt REST API surface, with dataset shortcut
 - [Install](#install)
 - [Functionality](#functionality)
 - [Configuration](#configuration)
-- [Config File](#config-file)
 - [Quick Start](#quick-start)
 - [Credits](#credits)
 
@@ -87,7 +86,7 @@ By default the CLI targets the published UniProt REST services, leaves GET-respo
 
 The main environment variables are `UNIPROT_API_BASE_URL`, `UNIPROT_CACHE_DIR`, `UNIPROT_CACHE_MAX_BYTES`, and `XDG_CACHE_HOME`.
 
-## Config File
+### Config File
 $$\color{#0EA5E9}Set \space \color{#14B8A6}Defaults$$
 
 The CLI reads optional defaults from `$XDG_CONFIG_HOME/uniprot-cli/config.toml`, falling back to `~/.config/uniprot-cli/config.toml`.
