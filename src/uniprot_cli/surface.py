@@ -113,9 +113,7 @@ SPECIALIZED_SHORTCUTS = (
     ),
 )
 
-SPECIALIZED_SHORTCUTS_BY_PATH = {
-    (item.group, item.name): item for item in SPECIALIZED_SHORTCUTS
-}
+SPECIALIZED_SHORTCUTS_BY_PATH = {(item.group, item.name): item for item in SPECIALIZED_SHORTCUTS}
 
 TOP_LEVEL_COMMANDS = (
     {

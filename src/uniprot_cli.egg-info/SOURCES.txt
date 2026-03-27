@@ -9,6 +9,7 @@ src/uniprot_cli/client.py
 src/uniprot_cli/core.py
 src/uniprot_cli/docs.py
 src/uniprot_cli/metadata.py
+src/uniprot_cli/surface.py
 src/uniprot_cli.egg-info/PKG-INFO
 src/uniprot_cli.egg-info/SOURCES.txt
 src/uniprot_cli.egg-info/dependency_links.txt

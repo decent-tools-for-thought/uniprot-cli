@@ -7,79 +7,129 @@ Project-URL: Homepage, https://github.com/decent-tools-for-thought/uniprot-cli
 Project-URL: Repository, https://github.com/decent-tools-for-thought/uniprot-cli
 Project-URL: Issues, https://github.com/decent-tools-for-thought/uniprot-cli/issues
 Project-URL: Documentation, https://rest.uniprot.org/uniprotkb/api/docs
-Requires-Python: >=3.11
+Requires-Python: >=3.13
 Description-Content-Type: text/markdown
 License-File: LICENSE
 Requires-Dist: httpx>=0.28.1
 Dynamic: license-file
 
+<div align="center">
+
 # uniprot-cli
 
-`uniprot-cli` is a Python/`uv`-friendly command line client for the UniProt REST
-API.
+[![Release](https://img.shields.io/github/v/release/decent-tools-for-thought/uniprot-cli?sort=semver&color=0f766e)](https://github.com/decent-tools-for-thought/uniprot-cli/releases)
+![Python](https://img.shields.io/badge/python-3.11%2B-0ea5e9)
+![License](https://img.shields.io/badge/license-0BSD-14b8a6)
 
-The repository follows the same shape as the other Python CLI projects in the
-`decent-tools-for-thought` organization:
+Command-line client for the full UniProt REST API surface, with dataset shortcuts, specialized endpoint commands, asynchronous ID mapping, direct operation calls, offline docs, and optional local caching.
 
-- `src/` layout
-- library code separated from the thin CLI entrypoint
-- `pyproject.toml` build metadata
-- `uv.lock` for reproducible installs
-- `packaging/arch/` reserved for AUR packaging support
+</div>
 
-The library includes:
+> [!IMPORTANT]
+> This codebase is entirely AI-generated. It is useful to me, I hope it might be useful to others, and issues and contributions are welcome.
 
-- a generic client over the published UniProt OpenAPI specs
-- convenience methods for single-entry lookup, search, stream, and ID mapping
-- local disk caching for GET requests
-- an LLM-oriented `docs` command that summarizes every endpoint across the
-  shipped UniProt specs
+## Map
+- [Install](#install)
+- [Functionality](#functionality)
+- [Configuration](#configuration)
+- [Quick Start](#quick-start)
+- [Credits](#credits)
 
 ## Install
+$$\color{#0EA5E9}Install \space \color{#14B8A6}Tool$$
 
 ```bash
-uv sync
+uv tool install .      # install the CLI
+uniprot --help     # inspect the command surface
 ```
 
-## Basic usage
+## Functionality
+$$\color{#0EA5E9}Dataset \space \color{#14B8A6}Shortcuts$$
+- `uniprot get-entry <dataset> <identifier>`: fetch one record by identifier.
+  Supported datasets: `uniprotkb`, `uniref`, `uniparc`, `proteomes`, `citations`, `database`, `diseases`, `keywords`, `locations`, `taxonomy`, `arba`, `unirule`.
+- `uniprot search <dataset> <query>`: run a paginated search.
+  Supported datasets: `uniprotkb`, `uniref`, `uniparc`, `proteomes`, `genecentric`, `citations`, `database`, `diseases`, `keywords`, `locations`, `taxonomy`, `arba`, `unirule`.
+- `uniprot stream <dataset> <query>`: run a streamed bulk query.
+  Supported datasets: `uniprotkb`, `uniref`, `uniparc`, `proteomes`, `genecentric`, `citations`, `database`, `diseases`, `keywords`, `locations`, `taxonomy`, `arba`, `unirule`.
+- `uniprot get-entry|search|stream --query-param NAME=VALUE`: pass native query parameters directly to the upstream API.
+
+$$\color{#0EA5E9}Specialized \space \color{#14B8A6}Shortcuts$$
+- `uniprot uniref light <id>`: fetch a lightweight UniRef cluster view.
+- `uniprot uniref members <id>`: list the members of a UniRef cluster.
+- `uniprot uniref members-stream <id>`: stream the members of a UniRef cluster.
+- `uniprot uniparc light <upi>`: fetch a lightweight UniParc entry.
+- `uniprot uniparc databases <upi>`: list cross-database records linked to a UniParc sequence.
+- `uniprot uniparc databases-stream <upi>`: stream cross-database records linked to a UniParc sequence.
+- `uniprot uniparc proteome <upid>`: list UniParc sequences linked to a proteome.
+- `uniprot uniparc proteome-stream <upid>`: stream UniParc sequences linked to a proteome.
+- `uniprot proteomes genecentric-entry <accession>`: fetch a gene-centric proteome grouping by accession.
+- `uniprot proteomes genecentric-upid-entry <upid>`: fetch a gene-centric proteome grouping by proteome ID.
+
+$$\color{#0EA5E9}ID \space \color{#14B8A6}Mapping$$
+- `uniprot idmapping run --from <db> --to <db> <id>...`: submit an asynchronous ID mapping job.
+- `uniprot idmapping status <job-id>`: poll mapping job status.
+- `uniprot idmapping details <job-id>`: inspect mapping job metadata.
+- `uniprot idmapping results <job-id>`: fetch the completed result set, optionally with `--target` and `--stream`.
+
+$$\color{#0EA5E9}Direct \space \color{#14B8A6}Calls$$
+- `uniprot request <operation>`: call any shipped OpenAPI operation directly by operation key.
+- `uniprot request --path NAME=VALUE --query NAME=VALUE --body-json ...`: fill path parameters, query parameters, and request bodies explicitly.
+- `uniprot docs [selector]`: print bundled CLI and endpoint documentation.
+- `uniprot docs --format markdown|json`: emit either Markdown or machine-readable JSON.
+- `uniprot docs all`: show the entire CLI surface plus all bundled endpoints.
+- `uniprot docs <collection|operation>`: narrow to one collection such as `uniparc` or one operation such as `uniref.members`.
+
+$$\color{#0EA5E9}Output \space \color{#14B8A6}Control$$
+- `uniprot --decode auto|json|text|bytes`: choose response decoding behavior for dataset shortcuts, specialized shortcuts, `request`, and ID mapping result commands.
+- The client bundles the seven UniProt REST API sections: `uniprotkb`, `uniref`, `uniparc`, `proteomes`, `support-data`, `aa`, and `idmapping`.
+- All bundled GET/POST operations are reachable either through a dedicated shortcut command or through `request`.
+
+$$\color{#0EA5E9}Cache \space \color{#14B8A6}Control$$
+- `uniprot cache stats`: show cache size and entry counts.
+- `uniprot cache prune --max-size-gb <n>`: evict older cache entries until the cache fits the target cap.
+- `uniprot cache clear`: remove all cached responses.
+
+## Configuration
+$$\color{#0EA5E9}Tune \space \color{#14B8A6}Defaults$$
+
+By default the CLI targets the published UniProt REST services, leaves GET-response caching disabled, and auto-decodes responses based on content type.
+
+- Use `--base-url` to point at another UniProt-compatible endpoint.
+- Use `--decode json|text|bytes` when you want to override automatic response decoding.
+- Use `--max-cache-size-gb` with a value greater than `0` to enable local caching for GET requests.
+- Use `--no-cache` or `--refresh` when you want live responses instead of cached ones.
+
+The main environment variables are `UNIPROT_API_BASE_URL`, `UNIPROT_CACHE_DIR`, `UNIPROT_CACHE_MAX_BYTES`, and `XDG_CACHE_HOME`.
+
+### Config File
+$$\color{#0EA5E9}Set \space \color{#14B8A6}Defaults$$
+
+The CLI reads optional defaults from `$XDG_CONFIG_HOME/uniprot-cli/config.toml`, falling back to `~/.config/uniprot-cli/config.toml`.
+
+Start from `config/default-config.toml` in this repo. The shipped default keeps caching off:
+
+```toml
+[cache]
+max_size_gb = 0.0
+```
+
+## Quick Start
+$$\color{#0EA5E9}Try \space \color{#14B8A6}Browse$$
 
 ```bash
-uniprot-cli get-entry uniprotkb P05067
-uniprot-cli search uniprotkb "gene:APP AND organism_id:9606" --query-param size=1
-uniprot-cli stream taxonomy "scientific_name:Homo sapiens" --query-param format=json
-uniprot-cli idmapping run --from UniProtKB_AC-ID --to GeneID P05067 Q9Y261
-uniprot-cli docs uniprotkb
-uniprot-cli docs idmapping --format json
+uniprot get-entry uniprotkb P05067                                      # fetch one UniProtKB record
+uniprot search uniprotkb "gene:APP AND organism_id:9606" --query-param size=1
+uniprot stream taxonomy "scientific_name:Homo sapiens" --query-param format=json
+uniprot uniref members UniRef90_P05067 --query-param format=json        # list UniRef cluster members
+uniprot uniparc databases UPI0000000001 --query-param format=json       # list UniParc cross-references
+uniprot proteomes genecentric-entry P05067 --query-param format=json     # fetch gene-centric view
+uniprot idmapping run --from UniProtKB_AC-ID --to GeneID P05067 Q9Y261  # submit a mapping job
+uniprot request uniref.members --path id=UniRef90_P05067 --query format=json
+uniprot docs all --format json                                           # inspect the full bundled surface
 ```
 
-## Generic requests
+## Credits
 
-The `request` command calls any shipped operation directly by operation key:
+This client is built for the UniProt REST API and is not affiliated with UniProt.
 
-```bash
-uniprot-cli request uniprotkb.entry --path accession=P05067 --query format=json
-uniprot-cli request uniref.search --query 'query=member_id:P05067' --query size=5
-```
-
-## Cache management
-
-```bash
-uniprot-cli cache stats
-uniprot-cli cache prune --max-size-gb 5
-uniprot-cli cache clear
-```
-
-## Environment variables
-
-- `UNIPROT_API_BASE_URL`
-- `UNIPROT_CACHE_DIR`
-- `UNIPROT_CACHE_MAX_BYTES`
-- `XDG_CACHE_HOME`
-
-## Development
-
-```bash
-uv run pytest
-uv run ruff check .
-uv run mypy
-```
+Credit goes to the UniProt Consortium for the protein knowledgebase, identifier mapping services, OpenAPI descriptions, and endpoint documentation this tool builds on.

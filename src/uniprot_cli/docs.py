@@ -74,9 +74,7 @@ def _render_markdown(payload: dict[str, Any]) -> str:
                         f"identifier={dataset['identifier']}"
                     )
                 else:
-                    lines.append(
-                        f"  - {dataset['dataset']}: operation={dataset['operation_key']}"
-                    )
+                    lines.append(f"  - {dataset['dataset']}: operation={dataset['operation_key']}")
         if "subcommands" in command:
             lines.append("- subcommands:")
             for subcommand in command["subcommands"]:
@@ -104,8 +102,8 @@ def _render_markdown(payload: dict[str, Any]) -> str:
     lines.extend(
         [
             "",
-        "## Collections",
-        "",
+            "## Collections",
+            "",
         ]
     )
     for collection in payload["collections"]:

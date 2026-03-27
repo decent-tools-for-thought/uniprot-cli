@@ -22,7 +22,7 @@ from .surface import SPECIALIZED_SHORTCUTS, SPECIALIZED_SHORTCUTS_BY_PATH
 
 def build_parser(cache_settings: CacheSettings | None = None) -> argparse.ArgumentParser:
     settings = load_cache_settings() if cache_settings is None else cache_settings
-    parser = argparse.ArgumentParser(prog="uniprot-cli")
+    parser = argparse.ArgumentParser(prog="uniprot")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     entry_parser = subparsers.add_parser("get-entry", help="Fetch a single record by identifier")

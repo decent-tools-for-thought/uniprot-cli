@@ -265,9 +265,7 @@ class UniProtClient:
         operation = _resolve_operation(operation_key)
         path = _render_path(operation, path_params or {})
         params = {
-            key: value
-            for key, value in dict(query_params or {}).items()
-            if value is not None
+            key: value for key, value in dict(query_params or {}).items() if value is not None
         }
         body_bytes = b"" if body is None else json.dumps(body, sort_keys=True).encode("utf-8")
         cacheable = operation.method == "GET" and use_cache

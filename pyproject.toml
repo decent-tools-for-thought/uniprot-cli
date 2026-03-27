@@ -7,7 +7,7 @@ name = "uniprot-cli"
 version = "0.1.0"
 description = "Command-line client for the UniProt REST API"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.13"
 license = { text = "0BSD" }
 dependencies = [
   "httpx>=0.28.1",
@@ -28,7 +28,7 @@ dev = [
 ]
 
 [project.scripts]
-uniprot-cli = "uniprot_cli.cli:main"
+uniprot = "uniprot_cli.cli:main"
 
 [tool.setuptools]
 package-dir = { "" = "src" }
@@ -45,7 +45,7 @@ testpaths = ["tests"]
 
 [tool.ruff]
 line-length = 100
-target-version = "py311"
+target-version = "py313"
 
 [tool.ruff.format]
 quote-style = "double"
@@ -54,7 +54,7 @@ quote-style = "double"
 select = ["E", "F", "I", "UP"]
 
 [tool.mypy]
-python_version = "3.11"
+python_version = "3.13"
 files = ["src/uniprot_cli", "tests"]
 strict = true
 

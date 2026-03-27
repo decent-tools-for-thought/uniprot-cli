@@ -138,18 +138,14 @@ def endpoint_docs() -> tuple[EndpointDoc, ...]:
     docs: list[EndpointDoc] = []
     for spec_name, spec in _raw_specs().items():
         tags = {
-            item["name"]: _clean_text(item.get("description", ""))
-            for item in spec.get("tags", [])
+            item["name"]: _clean_text(item.get("description", "")) for item in spec.get("tags", [])
         }
         for path, path_item in spec["paths"].items():
             for method, operation in path_item.items():
                 if method.lower() not in {"get", "post"}:
                     continue
                 tag = operation["tags"][0]
-                parameters = [
-                    _parameter_doc(item)
-                    for item in operation.get("parameters", [])
-                ]
+                parameters = [_parameter_doc(item) for item in operation.get("parameters", [])]
                 request_body = operation.get("requestBody", {})
                 request_content = tuple(sorted(request_body.get("content", {}).keys()))
                 response_content = tuple(sorted(_response_content_keys(operation)))
@@ -311,8 +307,7 @@ def _semantic_summary(spec_name: str, path: str, method: str) -> str:
         return "Retrieve a single automatic annotation rule by its stable identifier."
     if spec_name == "uniparc" and "/proteome/" in path:
         return (
-            "Navigate from a proteome identifier to the UniParc sequences linked "
-            "to that proteome."
+            "Navigate from a proteome identifier to the UniParc sequences linked to that proteome."
         )
     if spec_name == "proteomes" and path.startswith("/genecentric"):
         return "Retrieve a gene-centric protein grouping within proteome-level data."

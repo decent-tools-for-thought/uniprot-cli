@@ -25,54 +25,54 @@ $$\color{#0EA5E9}Install \space \color{#14B8A6}Tool$$
 
 ```bash
 uv tool install .      # install the CLI
-uniprot-cli --help     # inspect the command surface
+uniprot --help     # inspect the command surface
 ```
 
 ## Functionality
 $$\color{#0EA5E9}Dataset \space \color{#14B8A6}Shortcuts$$
-- `uniprot-cli get-entry <dataset> <identifier>`: fetch one record by identifier.
+- `uniprot get-entry <dataset> <identifier>`: fetch one record by identifier.
   Supported datasets: `uniprotkb`, `uniref`, `uniparc`, `proteomes`, `citations`, `database`, `diseases`, `keywords`, `locations`, `taxonomy`, `arba`, `unirule`.
-- `uniprot-cli search <dataset> <query>`: run a paginated search.
+- `uniprot search <dataset> <query>`: run a paginated search.
   Supported datasets: `uniprotkb`, `uniref`, `uniparc`, `proteomes`, `genecentric`, `citations`, `database`, `diseases`, `keywords`, `locations`, `taxonomy`, `arba`, `unirule`.
-- `uniprot-cli stream <dataset> <query>`: run a streamed bulk query.
+- `uniprot stream <dataset> <query>`: run a streamed bulk query.
   Supported datasets: `uniprotkb`, `uniref`, `uniparc`, `proteomes`, `genecentric`, `citations`, `database`, `diseases`, `keywords`, `locations`, `taxonomy`, `arba`, `unirule`.
-- `uniprot-cli get-entry|search|stream --query-param NAME=VALUE`: pass native query parameters directly to the upstream API.
+- `uniprot get-entry|search|stream --query-param NAME=VALUE`: pass native query parameters directly to the upstream API.
 
 $$\color{#0EA5E9}Specialized \space \color{#14B8A6}Shortcuts$$
-- `uniprot-cli uniref light <id>`: fetch a lightweight UniRef cluster view.
-- `uniprot-cli uniref members <id>`: list the members of a UniRef cluster.
-- `uniprot-cli uniref members-stream <id>`: stream the members of a UniRef cluster.
-- `uniprot-cli uniparc light <upi>`: fetch a lightweight UniParc entry.
-- `uniprot-cli uniparc databases <upi>`: list cross-database records linked to a UniParc sequence.
-- `uniprot-cli uniparc databases-stream <upi>`: stream cross-database records linked to a UniParc sequence.
-- `uniprot-cli uniparc proteome <upid>`: list UniParc sequences linked to a proteome.
-- `uniprot-cli uniparc proteome-stream <upid>`: stream UniParc sequences linked to a proteome.
-- `uniprot-cli proteomes genecentric-entry <accession>`: fetch a gene-centric proteome grouping by accession.
-- `uniprot-cli proteomes genecentric-upid-entry <upid>`: fetch a gene-centric proteome grouping by proteome ID.
+- `uniprot uniref light <id>`: fetch a lightweight UniRef cluster view.
+- `uniprot uniref members <id>`: list the members of a UniRef cluster.
+- `uniprot uniref members-stream <id>`: stream the members of a UniRef cluster.
+- `uniprot uniparc light <upi>`: fetch a lightweight UniParc entry.
+- `uniprot uniparc databases <upi>`: list cross-database records linked to a UniParc sequence.
+- `uniprot uniparc databases-stream <upi>`: stream cross-database records linked to a UniParc sequence.
+- `uniprot uniparc proteome <upid>`: list UniParc sequences linked to a proteome.
+- `uniprot uniparc proteome-stream <upid>`: stream UniParc sequences linked to a proteome.
+- `uniprot proteomes genecentric-entry <accession>`: fetch a gene-centric proteome grouping by accession.
+- `uniprot proteomes genecentric-upid-entry <upid>`: fetch a gene-centric proteome grouping by proteome ID.
 
 $$\color{#0EA5E9}ID \space \color{#14B8A6}Mapping$$
-- `uniprot-cli idmapping run --from <db> --to <db> <id>...`: submit an asynchronous ID mapping job.
-- `uniprot-cli idmapping status <job-id>`: poll mapping job status.
-- `uniprot-cli idmapping details <job-id>`: inspect mapping job metadata.
-- `uniprot-cli idmapping results <job-id>`: fetch the completed result set, optionally with `--target` and `--stream`.
+- `uniprot idmapping run --from <db> --to <db> <id>...`: submit an asynchronous ID mapping job.
+- `uniprot idmapping status <job-id>`: poll mapping job status.
+- `uniprot idmapping details <job-id>`: inspect mapping job metadata.
+- `uniprot idmapping results <job-id>`: fetch the completed result set, optionally with `--target` and `--stream`.
 
 $$\color{#0EA5E9}Direct \space \color{#14B8A6}Calls$$
-- `uniprot-cli request <operation>`: call any shipped OpenAPI operation directly by operation key.
-- `uniprot-cli request --path NAME=VALUE --query NAME=VALUE --body-json ...`: fill path parameters, query parameters, and request bodies explicitly.
-- `uniprot-cli docs [selector]`: print bundled CLI and endpoint documentation.
-- `uniprot-cli docs --format markdown|json`: emit either Markdown or machine-readable JSON.
-- `uniprot-cli docs all`: show the entire CLI surface plus all bundled endpoints.
-- `uniprot-cli docs <collection|operation>`: narrow to one collection such as `uniparc` or one operation such as `uniref.members`.
+- `uniprot request <operation>`: call any shipped OpenAPI operation directly by operation key.
+- `uniprot request --path NAME=VALUE --query NAME=VALUE --body-json ...`: fill path parameters, query parameters, and request bodies explicitly.
+- `uniprot docs [selector]`: print bundled CLI and endpoint documentation.
+- `uniprot docs --format markdown|json`: emit either Markdown or machine-readable JSON.
+- `uniprot docs all`: show the entire CLI surface plus all bundled endpoints.
+- `uniprot docs <collection|operation>`: narrow to one collection such as `uniparc` or one operation such as `uniref.members`.
 
 $$\color{#0EA5E9}Output \space \color{#14B8A6}Control$$
-- `uniprot-cli --decode auto|json|text|bytes`: choose response decoding behavior for dataset shortcuts, specialized shortcuts, `request`, and ID mapping result commands.
+- `uniprot --decode auto|json|text|bytes`: choose response decoding behavior for dataset shortcuts, specialized shortcuts, `request`, and ID mapping result commands.
 - The client bundles the seven UniProt REST API sections: `uniprotkb`, `uniref`, `uniparc`, `proteomes`, `support-data`, `aa`, and `idmapping`.
 - All bundled GET/POST operations are reachable either through a dedicated shortcut command or through `request`.
 
 $$\color{#0EA5E9}Cache \space \color{#14B8A6}Control$$
-- `uniprot-cli cache stats`: show cache size and entry counts.
-- `uniprot-cli cache prune --max-size-gb <n>`: evict older cache entries until the cache fits the target cap.
-- `uniprot-cli cache clear`: remove all cached responses.
+- `uniprot cache stats`: show cache size and entry counts.
+- `uniprot cache prune --max-size-gb <n>`: evict older cache entries until the cache fits the target cap.
+- `uniprot cache clear`: remove all cached responses.
 
 ## Configuration
 $$\color{#0EA5E9}Tune \space \color{#14B8A6}Defaults$$
@@ -102,15 +102,15 @@ max_size_gb = 0.0
 $$\color{#0EA5E9}Try \space \color{#14B8A6}Browse$$
 
 ```bash
-uniprot-cli get-entry uniprotkb P05067                                      # fetch one UniProtKB record
-uniprot-cli search uniprotkb "gene:APP AND organism_id:9606" --query-param size=1
-uniprot-cli stream taxonomy "scientific_name:Homo sapiens" --query-param format=json
-uniprot-cli uniref members UniRef90_P05067 --query-param format=json        # list UniRef cluster members
-uniprot-cli uniparc databases UPI0000000001 --query-param format=json       # list UniParc cross-references
-uniprot-cli proteomes genecentric-entry P05067 --query-param format=json     # fetch gene-centric view
-uniprot-cli idmapping run --from UniProtKB_AC-ID --to GeneID P05067 Q9Y261  # submit a mapping job
-uniprot-cli request uniref.members --path id=UniRef90_P05067 --query format=json
-uniprot-cli docs all --format json                                           # inspect the full bundled surface
+uniprot get-entry uniprotkb P05067                                      # fetch one UniProtKB record
+uniprot search uniprotkb "gene:APP AND organism_id:9606" --query-param size=1
+uniprot stream taxonomy "scientific_name:Homo sapiens" --query-param format=json
+uniprot uniref members UniRef90_P05067 --query-param format=json        # list UniRef cluster members
+uniprot uniparc databases UPI0000000001 --query-param format=json       # list UniParc cross-references
+uniprot proteomes genecentric-entry P05067 --query-param format=json     # fetch gene-centric view
+uniprot idmapping run --from UniProtKB_AC-ID --to GeneID P05067 Q9Y261  # submit a mapping job
+uniprot request uniref.members --path id=UniRef90_P05067 --query format=json
+uniprot docs all --format json                                           # inspect the full bundled surface
 ```
 
 ## Credits
